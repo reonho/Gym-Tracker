@@ -1,4 +1,5 @@
 import {
+  Link,
   Links,
   LiveReload,
   Meta,
@@ -16,17 +17,17 @@ function NavBar({ children }) {
     <nav className="navbar is-black">
       <div className="navbar-brand">
         <a className="navbar-item ml-2 mr-0 p-1">
-          <img src={require("../assets/dumbbell-128.png")} width="25" />
+          {/* <img src={require("../assets/dumbbell-128.png")} width="25" /> */}
         </a>
         <a className="navbar-item has-text-white is-size-5 has-text-weight-bold">
-          GYM Tracker
+          LOGGY
         </a>
-        <a className="navbar-item" href="/">
+        <Link className="navbar-item" to="/">
           Home
-        </a>
-        <a className="navbar-item" href="/workouts">
+        </Link>
+        <Link className="navbar-item" to="/workouts">
           Workout
-        </a>
+        </Link>
       </div>
     </nav>
   );

@@ -3,17 +3,17 @@ generator client {
   previewFeatures = ["mongoDb"]
 }
 
-datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
-}
+// datasource db {
+//   provider = "mongodb"
+//   // url      = env("DATABASE_URL")
+// }
 
-model exercises {
-  id      String @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  history Json[]
-  name    String
-}
+// model exercises {
+//   id      String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+//   history Json[]
+//   name    String
+// }
 
-model workouts {
-  id String @id @default(dbgenerated()) @map("_id") @db.ObjectId
-}
+// model workouts {
+//   id String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+// }

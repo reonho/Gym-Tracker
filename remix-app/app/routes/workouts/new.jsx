@@ -1,4 +1,5 @@
 import DatePicker from "react-datepicker";
+import { Outlet, Link, useParams } from "remix";
 
 function set() {
   return (
@@ -23,41 +24,57 @@ function set() {
   );
 }
 
-function exercise() {
-  return (
-    <div className="container">
-      <div className="control">
-        <input
-          className="input is-secondary"
-          type="text"
-          placeholder="Exercise"
-        />
-      </div>
-      <button className="button is-primary is-fullwidth mt-5">Add Set</button>
-    </div>
-  );
-}
 export default function NewWorkoutRoute() {
   return (
     <div className="container m-3">
-      <div className="notification is-secondary">
-        <h1 className="title">New Workout</h1>
-      </div>
-
-      <form>
-        <div>
-          <label>
-            <DatePicker
-              className="title is-4 input is-secondary"
-              selected={new Date()}
-              onChange={(date) => console.log(date)}
-            />
-          </label>
+      <div className="">
+        <div className="notification is-secondary">
+          {/* <h1 className="title">New Workout</h1> */}
         </div>
-      </form>
-      <div className="mt-3">{exercise()}</div>
 
-      <button className="button is-dark is-fullwidth mt-5">Add Exercise</button>
+
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Date</label>
+          </div>
+          <DatePicker
+            className="input is-secondary"
+            selected={new Date()}
+            onChange={(date) => console.log(date)}
+          />
+        </div>
+
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Description</label>
+          </div>
+          <div class="field-body">
+            <p class="control">
+              <input className="input" />
+            </p>
+          </div>
+        </div>
+
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Location</label>
+          </div>
+          <div class="field-body">
+            <p class="control">
+              <input className="input" />
+            </p>
+          </div>
+        </div>
+
+        <hr />
+
+        <Outlet />
+        <div className="tile is-child ">
+          <Link to="/workouts/new/addExercise">
+            <button className="button is-dark is-fullwidth ">Create New</button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
