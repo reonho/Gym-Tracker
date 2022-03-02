@@ -14,7 +14,7 @@ export default function SetInput(props) {
       style={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-around",
+        justifyContent: "center",
         borderRadius: "1vh",
         backgroundColor: props.completed ? "#ebfffc" : "#f5f5f5",
       }}

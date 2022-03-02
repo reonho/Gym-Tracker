@@ -1,6 +1,6 @@
 import { Outlet, Form, useSubmit, useLoaderData, redirect } from "remix";
 import { padStart, startCase } from "lodash";
-import { createWorkout } from "~/workouts.js";
+import { createWorkout } from "~/service/workouts.js";
 import { useState } from "react";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
 
@@ -40,9 +40,9 @@ export default function CreateWorkoutRoute() {
   const submit = useSubmit();
   return (
     <UserAuthorisedComponent setUser={setUser}>
-      <div className="container m-3">
-        <div>
-          <h4 className="title is-4">Log Workout</h4>
+      <div className="container">
+        <div className="m-5">
+          <h4 className="title is-3">New Workout</h4>
           <Form
             method="POST"
             onSubmit={async (event) => {
@@ -105,7 +105,7 @@ export default function CreateWorkoutRoute() {
               </div>
             </div>
             <hr />
-            <button className="button is-dark is-fullwidth" type="submit">
+            <button className="button is-dark " type="submit">
               Create New
             </button>
           </Form>

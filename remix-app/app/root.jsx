@@ -32,11 +32,9 @@ function NavBar({ children }) {
   return (
     <nav className="navbar is-black">
       <div className="navbar-brand">
-        <Link
-          className="navbar-item has-text-white is-size-5 has-text-weight-bold"
-          to="/home"
-        >
-          LOGGY
+        <Link className="navbar-item is-size-5 " to="/home">
+          <div className="has-text-white has-text-weight-bold">GAINS</div>
+          BRO
         </Link>
         <div className="navbar-item">{children}</div>
       </div>
@@ -62,6 +60,12 @@ export default function App() {
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/2.14.1/react-datepicker.min.css"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap"
+          rel="stylesheet"
         />
       </head>
       <body>

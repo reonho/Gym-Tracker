@@ -1,5 +1,5 @@
 import { useLoaderData, useSearchParams, Link } from "remix";
-import { getWorkoutsForUser } from "~/workouts.js";
+import { getWorkoutsForUser } from "~/service/workouts.js";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
 import { BsCheckCircleFill, BsClockHistory } from "react-icons/bs";
 import { startCase } from "lodash";

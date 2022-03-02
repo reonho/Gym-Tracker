@@ -7,8 +7,8 @@ import {
   useNavigate,
 } from "remix";
 import { startCase } from "lodash";
-import { updateSet, addSet, deleteSet } from "~/sets.js";
-import { getWorkout, deleteExerciseFromWorkout } from "~/workouts.js";
+import { updateSet, addSet, deleteSet } from "~/service/sets.js";
+import { getWorkout, deleteExerciseFromWorkout } from "~/service/workouts.js";
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 

@@ -1,7 +1,7 @@
 import { useLoaderData, Link, useParams, redirect } from "remix";
-import { postExercisetoWorkout } from "~/workouts.js";
+import { postExercisetoWorkout } from "~/service/workouts.js";
 import { startCase } from "lodash";
-import { getExercises } from "~/exercises";
+import { getExercises } from "~/service/exercises";
 
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
@@ -50,7 +50,7 @@ export default function AddExerciseRoute() {
                 </button>
               </div>
               <div className="level-item">
-                <Link to={`/${user}/new/${workoutId}/currentExercises`}>
+                <Link to={`/workout/${workoutId}/currentExercises`}>
                   <button className="button  is-light">Cancel</button>
                 </Link>
               </div>

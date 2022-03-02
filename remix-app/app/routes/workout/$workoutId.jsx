@@ -1,5 +1,5 @@
 import { useLoaderData, Outlet, useFetcher } from "remix";
-import { finishWorkout, getWorkout } from "~/workouts.js";
+import { finishWorkout, getWorkout } from "~/service/workouts.js";
 import { startCase } from "lodash";
 import UserAuthorisedComponent from "../../components/UserAuthorisedComponent";
 import { useState } from "react";
@@ -12,8 +12,8 @@ export let loader = async ({ params }) => {
 export let action = async ({ request, params }) => {
   const form = await request.formData();
   const workout = await finishWorkout(form.get("workout_id"), {
-    start: form.get("start"),
-    end: form.get("end"),
+    start: new Date(form.get("start")),
+    end: new Date(form.get("end")),
   });
   return workout;
 };

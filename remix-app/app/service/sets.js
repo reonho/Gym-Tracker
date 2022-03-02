@@ -1,5 +1,8 @@
 import prisma from "~/prisma.js";
 import { mergeWith } from "lodash";
+import dayjs from "dayjs";
+var weekOfYear = require("dayjs/plugin/weekOfYear");
+dayjs.extend(weekOfYear);
 
 export async function deleteSet(formSet) {
   await prisma.$connect();
@@ -124,4 +127,37 @@ export async function updateSet(formSet) {
 
   prisma.$disconnect();
   // return updateWorkout;
+}
+
+//default filters for latest week
+export async function getSetsForUser(userId, filter_start, filter_end) {
+  let workoutObject = await prisma.workouts.findMany({
+    where: {
+      userId: userId,
+    },
+  });
+  const filter_date_start = filter_start
+    ? new Date(filter_start)
+    : new Date(dayjs().week(dayjs().week()).startOf("week").startOf("day"));
+  const filter_date_end = filter_end ? new Date(filter_end) : null;
+
+  const isBetweenFilterDates = (date, start, end) => {
+    const test = new Date(date);
+    if (start && end) {
+      return test > start && test < end;
+    } else if (start) {
+      return test > start;
+    }
+    return false;
+  };
+
+  workoutObject = workoutObject.filter((workout) =>
+    isBetweenFilterDates(
+      workout.datetime.start,
+      filter_date_start,
+      filter_date_end
+    )
+  );
+  const sets = workoutObject.map((workout) => workout.exercises).flat();
+  return [workoutObject, sets];
 }

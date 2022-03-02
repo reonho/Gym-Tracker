@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["mongoDb"]
+  previewFeatures = ["mongoDb","filterJson"]
 }
 
 datasource db {

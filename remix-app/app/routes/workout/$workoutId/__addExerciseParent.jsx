@@ -1,6 +1,6 @@
 import { startCase } from "lodash";
 import { useParams, Outlet, useLoaderData, useSearchParams } from "remix";
-import { getMuscleGroups } from "~/exercises";
+import { getMuscleGroups } from "~/service/exercises";
 
 export let loader = async () => {
   const muscle_groups = await getMuscleGroups();

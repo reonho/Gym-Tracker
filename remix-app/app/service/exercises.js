@@ -1,7 +1,7 @@
 import prisma from "~/prisma.js";
 export async function getExercises(muscle_group) {
   await prisma.$connect();
-  let exercises
+  let exercises;
   if (muscle_group) {
     exercises = await prisma.exercises.findMany({
       where: {
@@ -27,3 +27,4 @@ export async function getMuscleGroups() {
   prisma.$disconnect();
   return exercises;
 }
+
