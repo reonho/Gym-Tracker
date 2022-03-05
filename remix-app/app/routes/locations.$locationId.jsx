@@ -31,7 +31,7 @@ export let action = async ({ request }) => {
 
     await renameLocation(
       locationId,
-      locationName.replaceAll(" ", "_").toLowerCase()
+      locationName.replace(/ /g, "_").toLowerCase()
     );
   } else if (request.method === "DELETE") {
     // DELETE
@@ -96,7 +96,7 @@ export default function LocationRoute() {
 
             {!workoutsPerLocation["" + locationId] && (
               <div
-                className="button is-small is-light is-danger"
+                className="button is-light is-danger"
                 onClick={() =>
                   fetcher.submit(
                     { locationId: locationId },

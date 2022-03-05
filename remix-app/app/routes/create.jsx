@@ -5,17 +5,16 @@ import { useState } from "react";
 import { getLocations } from "~/service/location.js";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
 import dayjs from "dayjs";
+const utc = require("dayjs/plugin/utc");
+dayjs.extend(utc);
 
 export let action = async ({ request }) => {
   const form = await request.formData();
-  const userId = form.get("userId");
-  const name =
-    form.get("name") === ""
-      ? `${dayjs().format("dddd")} workout`
-      : form.get("name");
-  const datetime = new Date(`${form.get("datetime")}:00`);
+  let userId = form.get("userId");
+  let name = form.get("name");
+  let datetime = form.get("datetime");
   let location = form.get("location");
-  location = location?.toLowerCase()?.replaceAll(" ", "_") ?? null;
+  location = location?.toLowerCase()?.replace(/ /g, "_") ?? null;
   const workoutObjectId = await createWorkout({
     name,
     datetime,
@@ -62,7 +61,29 @@ export default function CreateWorkoutRoute() {
               userId.setAttribute("type", "hidden");
               userId.setAttribute("name", "userId");
               userId.setAttribute("value", uid);
+
+              const datetime = document.createElement("input");
+              datetime.setAttribute("type", "hidden");
+              datetime.setAttribute("name", "datetime");
+              datetime.setAttribute(
+                "value",
+                dayjs(`${event.target.datetimeLocal.value}:00`).utc()
+              );
+
+              const name = document.createElement("input");
+              name.setAttribute("type", "hidden");
+              name.setAttribute("name", "name");
+              name.setAttribute(
+                "value",
+                event.target.namePlaceholder.value === ""
+                  ? event.target.namePlaceholder.placeholder
+                  : event.target.namePlaceholder
+              );
+
               event.target.append(userId);
+              event.target.append(datetime);
+              event.target.append(name);
+
               submit(event.target);
             }}
           >
@@ -74,7 +95,7 @@ export default function CreateWorkoutRoute() {
                 <p className="control">
                   <input
                     className="input"
-                    name="name"
+                    name="namePlaceholder"
                     type="text"
                     placeholder={`${dayjs().format("dddd")} workout`}
                   />
@@ -91,7 +112,7 @@ export default function CreateWorkoutRoute() {
                   <input
                     type="datetime-local"
                     className="input"
-                    name="datetime"
+                    name="datetimeLocal"
                     defaultValue={getCurrentDateTime()}
                   />
                 </p>

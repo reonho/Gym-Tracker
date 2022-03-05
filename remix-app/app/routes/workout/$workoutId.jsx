@@ -23,7 +23,7 @@ export let action = async ({ request, params }) => {
     const form = await request.formData();
     const workout = await finishWorkout(
       form.get("workout_id"),
-      new Date(form.get("end"))
+      form.get("end")
     );
     return workout;
   }
@@ -96,8 +96,8 @@ export default function StartNewWorkoutRoute() {
                 <div>
                   <div className="title is-6">Workout Completed. </div>
                   {toTime(
-                    new Date(workout?.datetime_end) -
-                      new Date(workout?.datetime_start)
+                    dayjs(workout?.datetime_end) -
+                      dayjs(workout?.datetime_start)
                   )}
                 </div>
               </>
@@ -127,7 +127,7 @@ export default function StartNewWorkoutRoute() {
                     fetcher.submit(
                       {
                         workout_id: workout.id,
-                        end: new Date(),
+                        end: dayjs().utc(),
                       },
                       { method: "POST" }
                     )

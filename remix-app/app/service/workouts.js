@@ -12,6 +12,7 @@ export async function createWorkout(workout) {
       .insert({ name: workout.location, user_id: workout.userId });
   }
   locationId = checkLocation.data?.[0].id;
+  console.log(locationId);
 
   const { data, error } = await supabase.from("workout").insert([
     {
@@ -22,7 +23,7 @@ export async function createWorkout(workout) {
       user_id: workout.userId,
     },
   ]);
-
+  console.log(data, error);
   return data[0].id;
 }
 

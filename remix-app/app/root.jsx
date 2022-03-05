@@ -70,10 +70,7 @@ export default function App() {
           href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap"
           rel="stylesheet"
         />
-        <link
-          rel="icon"
-          href="https://cdn-icons.flaticon.com/png/512/2461/premium/2461077.png?token=exp=1646475458~hmac=ddc9d93fb2a22d3fbbd6e34bfde10b2c"
-        ></link>
+        <link rel="icon" href={require("../assets/logo.png")}></link>
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"

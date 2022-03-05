@@ -3,6 +3,9 @@ import { getWorkoutsForUser } from "~/service/workouts.js";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
 import { BsCheckCircleFill, BsClockHistory } from "react-icons/bs";
 import { startCase } from "lodash";
+import dayjs from "dayjs";
+const utc = require("dayjs/plugin/utc");
+dayjs.extend(utc);
 
 export let loader = async ({ request, params }) => {
   let url = new URL(request.url);
@@ -25,10 +28,10 @@ export default function ViewWorkoutRoute() {
             <div className="level is-mobile">
               <div>
                 <p className="title mb-2 is-5">
-                  {new Date(workout.datetime_start).toDateString()}
+                  {dayjs.utc(workout.datetime_start).toDateString()}
                 </p>
                 <div className="title mb-2 is-6">
-                  {new Date(workout.datetime_start).toLocaleTimeString()}
+                  {dayjs.utc(workout.datetime_start).toLocaleTimeString()}
                   {" - "}
                   {workout.name}
                 </div>
