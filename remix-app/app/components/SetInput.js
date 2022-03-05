@@ -21,7 +21,7 @@ export default function SetInput(props) {
     >
       <div>
         <input
-          class="input"
+          className="input is-small"
           type="number"
           placeholder="Weight (kg)"
           value={weight}
@@ -34,7 +34,7 @@ export default function SetInput(props) {
 
       <div className="ml-1">
         <input
-          class="input"
+          className="input is-small"
           type="number"
           placeholder="Reps"
           value={repetitions}
@@ -46,7 +46,7 @@ export default function SetInput(props) {
       </div>
       <div className="ml-1">
         <button
-          className="button is-danger is-light"
+          className="button is-danger is-light is-small"
           onClick={props.deleteFunc}
         >
           <CgClose size={15} />
@@ -60,7 +60,9 @@ export default function SetInput(props) {
               return !complete;
             });
           }}
-          className={`button is-light ${props.completed ? "is-primary" : ""}`}
+          className={`button is-small is-light ${
+            props.completed ? "is-primary" : ""
+          }`}
         >
           <RiCheckFill size={15} />
         </button>

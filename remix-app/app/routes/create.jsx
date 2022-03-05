@@ -2,31 +2,41 @@ import { Outlet, Form, useSubmit, useLoaderData, redirect } from "remix";
 import { padStart, startCase } from "lodash";
 import { createWorkout } from "~/service/workouts.js";
 import { useState } from "react";
+import { getLocations } from "~/service/location.js";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
+import dayjs from "dayjs";
 
 export let action = async ({ request }) => {
   const form = await request.formData();
   const userId = form.get("userId");
-  const name = form.get("name");
+  const name =
+    form.get("name") === ""
+      ? `${dayjs().format("dddd")} workout`
+      : form.get("name");
   const datetime = new Date(`${form.get("datetime")}:00`);
-  const location = form.get("location");
-  const workoutObject = await createWorkout({
+  let location = form.get("location");
+  location = location?.toLowerCase()?.replaceAll(" ", "_") ?? null;
+  const workoutObjectId = await createWorkout({
     name,
     datetime,
     location,
     userId,
   });
-  return redirect(`/workout/${workoutObject.id}/currentExercises`);
+
+  return redirect(`/workout/${workoutObjectId}/currentExercises`);
 };
 
-export let loader = () => {
-  const locations = ["anytime_orchard", "anytime_bukit_batok", "madeira_gym"];
-  return { locations };
+export let loader = async ({ request }) => {
+  let url = new URL(request.url);
+  const user = url.searchParams.get("user");
+  const locations = await getLocations(user);
+  return locations;
 };
 
 export default function CreateWorkoutRoute() {
-  const { locations } = useLoaderData();
+  const locations = useLoaderData();
   const [user, setUser] = useState();
+  const [hasLocation, setHasLocation] = useState();
 
   const getCurrentDateTime = () => {
     const date = new Date();
@@ -58,7 +68,7 @@ export default function CreateWorkoutRoute() {
           >
             <div className="field is-horizontal">
               <div className="field-label is-normal">
-                <label className="label">Name/Description</label>
+                <label className="label">Name/Desc</label>
               </div>
               <div className="field-body">
                 <p className="control">
@@ -66,25 +76,8 @@ export default function CreateWorkoutRoute() {
                     className="input"
                     name="name"
                     type="text"
-                    placeholder="Name for this workout"
+                    placeholder={`${dayjs().format("dddd")} workout`}
                   />
-                </p>
-              </div>
-            </div>
-
-            <div className="field is-horizontal">
-              <div className="field-label is-normal">
-                <label className="label">Location</label>
-              </div>
-              <div className="field-body ">
-                <p className="control select">
-                  <select name="location">
-                    {locations.map((item) => (
-                      <option key={item} value={item}>
-                        {startCase(item)}
-                      </option>
-                    ))}
-                  </select>
                 </p>
               </div>
             </div>
@@ -104,8 +97,38 @@ export default function CreateWorkoutRoute() {
                 </p>
               </div>
             </div>
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label">Location</label>
+              </div>
+              <div className="field-body ">
+                <p className="control">
+                  <input
+                    onChange={(e) => {
+                      !e.target.value
+                        ? setHasLocation(false)
+                        : setHasLocation(true);
+                    }}
+                    type="text"
+                    autoComplete="off"
+                    className={`input select `}
+                    list="locations"
+                    name="location"
+                  />
+                  <datalist id="locations" className="">
+                    {locations.map((item) => (
+                      <option key={item.name} value={startCase(item.name)} />
+                    ))}
+                  </datalist>
+                </p>
+              </div>
+            </div>
             <hr />
-            <button className="button is-dark " type="submit">
+            <button
+              className="button is-dark "
+              type="submit"
+              disabled={!hasLocation}
+            >
               Create New
             </button>
           </Form>

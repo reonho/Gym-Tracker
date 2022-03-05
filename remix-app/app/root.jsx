@@ -11,7 +11,7 @@ import {
 import { initializeApp } from "firebase/app";
 import FirebaseLogin from "~/components/FirebaseLogin.js";
 export function meta() {
-  return { title: "Gym Log" };
+  return { title: "GainsBro" };
 }
 
 export let loader = async () => {
@@ -52,11 +52,14 @@ export default function App() {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
-        <link href="https://css.gg/css" rel="stylesheet"></link>
-        <link
+        {/* <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
-        ></link>
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+          crossorigin="anonymous"
+        /> */}
+
+        <link href="https://css.gg/css" rel="stylesheet"></link>
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/2.14.1/react-datepicker.min.css"
@@ -67,6 +70,14 @@ export default function App() {
           href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap"
           rel="stylesheet"
         />
+        <link
+          rel="icon"
+          href="https://cdn-icons.flaticon.com/png/512/2461/premium/2461077.png?token=exp=1646475458~hmac=ddc9d93fb2a22d3fbbd6e34bfde10b2c"
+        ></link>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+        ></link>
       </head>
       <body>
         <NavBar>

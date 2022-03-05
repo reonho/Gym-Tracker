@@ -6,14 +6,14 @@ export default function AnalyticsRoute() {
 
   return (
     <>
-      <div className="m-5">
-        <div className="title is-3 ml-2">Analytics</div>
+      <div className="m-2">
+        <div className="title is-3 m-5">Analytics</div>
         <div className="level">
-          <div className="level-item m-3">
+          <div className="level-item ">
             <div className="box container">
-              <aside class="menu">
-                <p class="menu-label">Routine Stats</p>
-                <ul class="menu-list">
+              <aside className="menu">
+                <p className="menu-label">Effort Stats</p>
+                <ul className="menu-list">
                   <li>
                     <a
                       className={
@@ -26,10 +26,22 @@ export default function AnalyticsRoute() {
                       Trained this week
                     </a>
                   </li>
+                  <li>
+                    <a
+                      className={
+                        location.pathname === "/analytics/workouts-per-week"
+                          ? "is-active"
+                          : null
+                      }
+                      href={`/analytics/workouts-per-week?user=${user}`}
+                    >
+                      Workouts per Week
+                    </a>
+                  </li>
                 </ul>
-                <ul class="menu-list"></ul>
-                <p class="menu-label">Strength Stats</p>
-                <ul class="menu-list">
+                <ul className="menu-list"></ul>
+                <p className="menu-label">Strength Stats</p>
+                <ul className="menu-list">
                   <li>
                     <a
                       className={
@@ -43,13 +55,22 @@ export default function AnalyticsRoute() {
                     </a>
                   </li>
                   <li>
-                    <a>Personal Records</a>
+                    <a
+                      className={
+                        location.pathname === "/analytics/personal-bests"
+                          ? "is-active"
+                          : null
+                      }
+                      href={`/analytics/personal-bests?user=${user}`}
+                    >
+                      Personal Bests
+                    </a>
                   </li>
                 </ul>
               </aside>
             </div>
           </div>
-          <div className="level-item m-3">
+          <div className="level-item">
             {location.pathname !== "/analytics" && (
               <div className="box container">
                 <Outlet />

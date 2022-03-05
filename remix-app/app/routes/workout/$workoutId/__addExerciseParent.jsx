@@ -1,5 +1,11 @@
 import { startCase } from "lodash";
-import { useParams, Outlet, useLoaderData, useSearchParams } from "remix";
+import {
+  useParams,
+  useNavigate,
+  Outlet,
+  useLoaderData,
+  useSearchParams,
+} from "remix";
 import { getMuscleGroups } from "~/service/exercises";
 
 export let loader = async () => {
@@ -10,23 +16,36 @@ export let loader = async () => {
 export default function ExercisesRouteIndex() {
   let [searchParams, setSearchParams] = useSearchParams();
   const muscle_groups = useLoaderData();
+  const navigate = useNavigate();
+  const { workoutId } = useParams();
 
   return (
     <>
-      <div class="m-5">
-        <div class="buttons">
+      <div className="m-5">
+        <div className="buttons">
+          <button
+            onClick={() => {
+              navigate(`/workout/${workoutId}/addExercise`);
+            }}
+            className={`button is-light is-small ${
+              searchParams.get("muscle_group") ?? "is-active"
+            }`}
+          >
+            All
+          </button>
           {muscle_groups.map((muscle) => (
             <button
+              key={muscle}
               onClick={() => {
-                setSearchParams({ muscle_group: muscle.muscle_group });
+                setSearchParams({ muscle_group: muscle.name });
               }}
-              class={`button is-light ${
-                searchParams.get("muscle_group") === muscle.muscle_group
+              className={`button is-light is-small ${
+                searchParams.get("muscle_group") === muscle.name
                   ? "is-active"
                   : ""
               }`}
             >
-              {startCase(muscle.muscle_group)}
+              {startCase(muscle.name)}
             </button>
           ))}
         </div>
