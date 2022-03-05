@@ -9,6 +9,7 @@ export default function UserAuthorisedComponent(props) {
   onAuthStateChanged(auth, (result) => {
     result ? setUser(result) : setUser(null);
   });
+
   useEffect(async () => {
     if (user === null) {
       navigate("/");
@@ -16,6 +17,7 @@ export default function UserAuthorisedComponent(props) {
     if (user) {
       props.setUser ? props.setUser(user) : null;
       const uid = user.uid;
+
       if (props.idPredicate && !props.idPredicate(uid)) {
         navigate("/home");
       } else {

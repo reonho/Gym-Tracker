@@ -1,71 +1,25 @@
-import prisma from "~/prisma.js";
-import { mergeWith } from "lodash";
 import dayjs from "dayjs";
+import supabase from "~/supabase";
 var weekOfYear = require("dayjs/plugin/weekOfYear");
 dayjs.extend(weekOfYear);
 
 export async function deleteSet(formSet) {
-  await prisma.$connect();
-  const workoutObject = await prisma.workouts.findUnique({
-    where: {
-      id: formSet.get("workout_id"),
-    },
-  });
-
-  const newExercises = workoutObject.exercises.map((exercise) =>
-    exercise.name === formSet.get("exercise_name")
-      ? {
-          name: exercise.name,
-          sets: exercise.sets.filter((item, index) => {
-            return item.id !== formSet.get("index");
-          }),
-        }
-      : exercise
-  );
-
-  const updateWorkout = await prisma.workouts.update({
-    where: {
-      id: formSet.get("workout_id"),
-    },
-    data: {
-      exercises: newExercises,
-    },
-  });
-
-  prisma.$disconnect();
+  const delSet = await supabase
+    .from("set")
+    .delete()
+    .match({ id: formSet.get("index") });
 }
 export async function addSet(formSet) {
-  const submissionSet = {
-    weight: null,
-    repetitions: null,
-    completed: false,
-    id: `${formSet.get("workout_id")}_${formSet.get(
-      "exercise_name"
-    )}_${Date.now()}`,
-  };
-  await prisma.$connect();
-  const workoutObject = await prisma.workouts.findUnique({
-    where: {
-      id: formSet.get("workout_id"),
+  const add = await supabase.from("set").insert([
+    {
+      workout_exercise: formSet.get("workout_exercise_id"),
+      weight: null,
+      repetitions: null,
+      completed: false,
     },
-  });
+  ]);
 
-  const newExercises = workoutObject.exercises.map((exercise) =>
-    exercise.name === formSet.get("exercise_name")
-      ? { name: exercise.name, sets: [...exercise.sets, submissionSet] }
-      : exercise
-  );
-
-  const updateWorkout = await prisma.workouts.update({
-    where: {
-      id: formSet.get("workout_id"),
-    },
-    data: {
-      exercises: newExercises,
-    },
-  });
-
-  prisma.$disconnect();
+  return add?.data?.[0];
 }
 export async function updateSet(formSet) {
   let submissionSet = {
@@ -87,77 +41,41 @@ export async function updateSet(formSet) {
   if (completedForSet !== null) {
     submissionSet.completed = completedForSet === "true";
   }
-
-  await prisma.$connect();
-  const workoutObject = await prisma.workouts.findUnique({
-    where: {
-      id: formSet.get("workout_id"),
-    },
-  });
-
-  const transformExerciseWithNewSet = (oldExercise, submissionSet, index) => {
-    const oldSet = oldExercise.sets.filter((set) => set.id === index)[0];
-    const newSet = mergeWith({}, oldSet, submissionSet, (a, b) =>
-      b === null ? a : undefined
-    );
-    const newExerciseSets = oldExercise.sets.map((set) =>
-      set.id === index ? newSet : set
-    );
-    return { ...oldExercise, sets: newExerciseSets };
-  };
-
-  const newExercises = workoutObject.exercises.map((exercise) =>
-    exercise.name === formSet.get("exercise_name")
-      ? transformExerciseWithNewSet(
-          exercise,
-          submissionSet,
-          formSet.get("index")
-        )
-      : exercise
-  );
-
-  const updateWorkout = await prisma.workouts.update({
-    where: {
-      id: formSet.get("workout_id"),
-    },
-    data: {
-      exercises: newExercises,
-    },
-  });
-
-  prisma.$disconnect();
-  // return updateWorkout;
+  const { data, error } = await supabase
+    .from("set")
+    .update(submissionSet)
+    .match({ id: formSet.get("index") });
 }
-
 //default filters for latest week
 export async function getSetsForUser(userId, filter_start, filter_end) {
-  let workoutObject = await prisma.workouts.findMany({
-    where: {
-      userId: userId,
-    },
-  });
   const filter_date_start = filter_start
-    ? new Date(filter_start)
-    : new Date(dayjs().week(dayjs().week()).startOf("week").startOf("day"));
-  const filter_date_end = filter_end ? new Date(filter_end) : null;
+    ? dayjs(filter_start)
+    : dayjs(dayjs().week(dayjs().week()).startOf("week").startOf("day"));
+  const filter_date_end = filter_end ? dayjs(filter_end) : dayjs();
 
-  const isBetweenFilterDates = (date, start, end) => {
-    const test = new Date(date);
-    if (start && end) {
-      return test > start && test < end;
-    } else if (start) {
-      return test > start;
-    }
-    return false;
-  };
+  const { data, error } = await supabase
+    .from("setsforworkout")
+    .select("*")
+    .eq("user_id", userId)
+    .gte("datetime_start", filter_date_start)
+    .lte("datetime_start", filter_date_end);
 
-  workoutObject = workoutObject.filter((workout) =>
-    isBetweenFilterDates(
-      workout.datetime.start,
-      filter_date_start,
-      filter_date_end
-    )
-  );
-  const sets = workoutObject.map((workout) => workout.exercises).flat();
-  return [workoutObject, sets];
+  return data;
+}
+
+export async function getBestSetPerWorkoutExercise(userId, exerciseId) {
+  if (exerciseId) {
+    const { data, error } = await supabase
+      .from("max_volume_for_workout_exercise")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("exercise_id", exerciseId);
+    return data;
+  } else {
+    const { data, error } = await supabase
+      .from("max_volume_for_workout_exercise")
+      .select("*")
+      .eq("user_id", userId);
+    return data;
+  }
 }

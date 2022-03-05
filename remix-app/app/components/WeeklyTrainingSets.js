@@ -7,11 +7,14 @@ export default function WeeklyTrainingSets(props) {
   const sets = props.weeklySets;
 
   useEffect(() => {
-    setCtx(document.getElementById("weeklySets"));
-
+    let chartStatus = Chart.getChart("weeklySets"); // <canvas> id
+    if (chartStatus != undefined) {
+      chartStatus.destroy();
+    }
     if (Object.keys(sets).length === 0) {
       return;
     }
+    setCtx(document.getElementById("weeklySets"));
     const weeklySetsChart = new Chart(ctx, {
       type: "bar",
       data: {

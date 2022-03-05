@@ -1,69 +1,64 @@
-import { getExercises } from "~/service/exercises";
-import { getWorkoutsForUser } from "~/service/workouts";
-import { useLoaderData } from "remix";
-import { startCase, groupBy } from "lodash";
-import { useState } from "react";
+import { getExercisesForUser } from "~/service/exercises";
+import { getBestSetPerWorkoutExercise } from "~/service/sets";
+import { Form, useLoaderData, useSubmit, useSearchParams } from "remix";
+import lodash, { startCase, groupBy } from "lodash";
 import ProgressiveOverload from "../../components/ProgressiveOverload";
 
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
   let user = url.searchParams.get("user");
-  const exerciseList = await getExercises();
-  const workouts = await getWorkoutsForUser(user);
-  workouts.reverse();
-  const exerciseProgress = {};
+  const exercises = await getExercisesForUser(user);
 
-  const getSetVolume = (set) =>
-    set.weight && set.repetitions ? set.weight * set.repetitions : 0;
+  let exercise = url.searchParams.get("exercise_id") ?? exercises[0].id;
+  const sets = await getBestSetPerWorkoutExercise(user, exercise);
 
-  workouts.forEach((workout) => {
-    workout.exercises.forEach((exercise) => {
-      let bestSet = {
-        [workout.datetime.start]: exercise.sets.reduce(
-          (setA, setB) =>
-            getSetVolume(setA) > getSetVolume(setB) ? setA : setB,
-          { weight: null, repetitions: null }
-        ),
-      };
-      if (exerciseProgress[exercise.name]) {
-        exerciseProgress[exercise.name].push(bestSet);
-      } else {
-        exerciseProgress[exercise.name] = [bestSet];
-      }
-    });
-  });
-
-  return [exerciseProgress, exerciseList];
+  const setsByExercise = groupBy(sets, (s) => s.exercise_id)[exercise];
+  return { setsByExercise, exercises };
 };
 
 export default function ProgressRoute() {
-  const [exerciseProgress, exerciseList] = useLoaderData();
-
-  const [singleExerciseChart, setSingleExerciseChart] = useState(
-    exerciseProgress[exerciseList[0].name]
-  );
+  const { setsByExercise, exercises } = useLoaderData();
+  const submit = useSubmit();
+  const [searchParams] = useSearchParams();
+  const singleExerciseChart = setsByExercise;
 
   return (
     <>
-      <div className="level is-mobile">
-        <div className="title is-4 ">Strength</div>
-        <div className="select">
-          <select
-            onChange={(e) => {
-              setSingleExerciseChart(exerciseProgress[e.target.value]);
-            }}
-          >
-            {exerciseList.map((e) => (
-              <option key={e.id} value={e.name}>
-                {startCase(e.name + " " + (e.variant ?? ""))}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="">
+        <div className="title is-4 mb-2">Progressive Overload</div>
+        <hr className="mt-2 mb-3" />
+        {singleExerciseChart && (
+          <div className="select mb-4 is-small">
+            <Form method="get">
+              <select
+                className="input"
+                name="exercise_id"
+                onChange={(e) => {
+                  submit({
+                    exercise_id: e.target.value,
+                    user: searchParams.getAll("user"),
+                  });
+                }}
+              >
+                {exercises.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {`${startCase(e.name)} ${
+                      e?.variant ? `(${startCase(e.variant)})` : ""
+                    }`}
+                  </option>
+                ))}
+              </select>
+            </Form>
+          </div>
+        )}
       </div>
 
       <div className="container">
-        <ProgressiveOverload progressiveOverload={singleExerciseChart} />
+        {singleExerciseChart ? (
+          <ProgressiveOverload progressiveOverload={singleExerciseChart} />
+        ) : (
+          "No workouts yet"
+        )}
       </div>
     </>
   );

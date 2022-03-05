@@ -13,20 +13,20 @@ export default function ExercisesRouteIndex() {
 
   return (
     <>
-      <div class="m-5">
-        <div class="buttons">
+      <div className="m-5">
+        <div className="buttons">
           {muscle_groups.map((muscle) => (
             <button
               onClick={() => {
-                setSearchParams({ muscle_group: muscle.muscle_group });
+                setSearchParams({ muscle_group: muscle.name });
               }}
-              class={`button is-light ${
-                searchParams.get("muscle_group") === muscle.muscle_group
+              className={`button is-light is-small ${
+                searchParams.get("muscle_group") === muscle.name
                   ? "is-active"
                   : ""
               }`}
             >
-              {startCase(muscle.muscle_group)}
+              {startCase(muscle.name)}
             </button>
           ))}
         </div>

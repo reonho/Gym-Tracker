@@ -40,7 +40,6 @@ export default function FirebaseLogin(props) {
                 aria-haspopup="true"
                 aria-controls="dropdown-menu"
                 onClick={() => {
-                  console.log(dropdownActive);
                   setDropdownActive((activeState) => !activeState);
                 }}
               >

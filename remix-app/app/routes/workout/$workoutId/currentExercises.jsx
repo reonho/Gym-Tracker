@@ -1,21 +1,38 @@
+import { Outlet, useLoaderData, Link, useParams, useFetcher } from "remix";
+import lodash, { startCase, groupBy, maxBy } from "lodash";
 import {
-  Outlet,
-  useLoaderData,
-  Link,
-  useParams,
-  useFetcher,
-  useNavigate,
-} from "remix";
-import { startCase } from "lodash";
-import { updateSet, addSet, deleteSet } from "~/service/sets.js";
-import { getWorkout, deleteExerciseFromWorkout } from "~/service/workouts.js";
-import { useState, useEffect } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-
+  updateSet,
+  addSet,
+  deleteSet,
+  getBestSetPerWorkoutExercise,
+} from "~/service/sets.js";
+import {
+  deleteExerciseFromWorkout,
+  getExercisesForWorkout,
+} from "~/service/workouts.js";
 import SetInput from "~/components/SetInput";
+
 export let loader = async ({ params }) => {
-  const workout = await getWorkout(params.workoutId);
-  return workout;
+  const setsForWorkout = await getExercisesForWorkout(params.workoutId);
+  const userId = setsForWorkout?.[0]?.user_id;
+  let bestSetByExercise;
+  if (userId) {
+    const sets = await getBestSetPerWorkoutExercise(userId);
+    bestSetByExercise = lodash(sets)
+      .groupBy((s) => s.exercise_id)
+      .mapValues((e) => maxBy(e, (s) => s.weight))
+      .value();
+  }
+
+  const exerciseSets = groupBy(
+    setsForWorkout,
+    (set) =>
+      `${startCase(set.exercise_name)} ${
+        set.variant ? `(${startCase(set.variant)})` : ""
+      }`
+  );
+
+  return { exerciseSets, bestSetByExercise };
 };
 
 export let action = async ({ request }) => {
@@ -41,22 +58,23 @@ export let action = async ({ request }) => {
 };
 
 export default function CurrentExercisesRoute() {
-  const workout = useLoaderData();
-  const exercises = workout.exercises;
+  const { exerciseSets, bestSetByExercise } = useLoaderData();
   const { workoutId } = useParams();
   const fetcher = useFetcher();
 
-  const renderExerciseForm = (exercise) => {
+  const renderExerciseForm = (exercise_name, sets) => {
+    const exerciseId = sets[0].exercise_id;
     const exerciseSetForm = {
       workout_id: workoutId,
-      exercise_name: exercise.name,
+      exercise_name: exercise_name,
+      workout_exercise_id: sets[0].workout_exercise_id,
     };
 
     const submitSetForm = (weight, repetitions, completed, index) =>
       fetcher.submit(
         {
           workout_id: workoutId,
-          exercise_name: exercise.name,
+          exercise_name: exercise_name,
           repetitions: repetitions,
           weight: weight,
           index: index,
@@ -69,27 +87,33 @@ export default function CurrentExercisesRoute() {
       fetcher.submit(
         {
           workout_id: workoutId,
-          exercise_name: exercise.name,
+          exercise_name: exercise_name,
           type: "set",
           index: index,
         },
         { method: "DELETE" }
       );
-
+    const previousBestSet = bestSetByExercise[exerciseId];
     return (
       <>
         <div className="box mb-3">
-          <div className="title is-5 mb-0">{startCase(exercise.name)}</div>
+          <div className="title is-5 mb-1">{exercise_name}</div>
+          {previousBestSet && (
+            <p>
+              <i> PB:</i> {previousBestSet.weight} x{" "}
+              {previousBestSet.repetitions} | {previousBestSet.max_volume}
+            </p>
+          )}
           <hr className="mb-4 mt-3" />
 
-          {exercise.sets.map((set) => (
+          {sets.map((set) => (
             <SetInput
-              key={set.id}
-              index={set.id}
+              key={set.set_id}
+              index={set.set_id}
               weight={set.weight}
               completed={set.completed}
               repetitions={set.repetitions}
-              deleteFunc={() => deleteSetForm(set.id)}
+              deleteFunc={() => deleteSetForm(set.set_id)}
               submitFunc={submitSetForm}
             />
           ))}
@@ -99,7 +123,7 @@ export default function CurrentExercisesRoute() {
                 onClick={() =>
                   fetcher.submit(exerciseSetForm, { method: "POST" })
                 }
-                className="button is-fullwidth is-black tile"
+                className="button is-fullwidth is-black is-small tile"
               >
                 + Set
               </button>
@@ -111,7 +135,7 @@ export default function CurrentExercisesRoute() {
                   { method: "DELETE" }
                 )
               }
-              className="button is-light  ml-2"
+              className="button is-light is-small ml-2"
             >
               Delete
             </button>
@@ -120,14 +144,15 @@ export default function CurrentExercisesRoute() {
       </>
     );
   };
+
   return (
     <>
-      {exercises.map((exercise, exIndex) => (
-        <div key={exIndex}>{renderExerciseForm(exercise)}</div>
+      {Object.entries(exerciseSets).map(([exercise_name, sets], exIndex) => (
+        <div key={exIndex}>{renderExerciseForm(exercise_name, sets)}</div>
       ))}
       <Outlet />
       <Link to={`/workout/${workoutId}/addExercise`}>
-        <button className="mt-5 button is-black is-fullwidth">
+        <button className="mt-5 button is-black is-fullwidth is-small">
           + Exercise
         </button>
       </Link>
