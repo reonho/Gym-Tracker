@@ -1,3 +1,5 @@
+import supabase from "~/supabase.js";
+
 export async function getLocations(user) {
   const { data, error } = await supabase
     .from("location")
