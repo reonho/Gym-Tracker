@@ -1,38 +1,8 @@
-import {
-  Outlet,
-  Form,
-  useSubmit,
-  useLoaderData,
-  redirect,
-  Link,
-  useSearchParams,
-} from "remix";
-import { startCase, groupBy, mapValues } from "lodash";
-import { createWorkout } from "~/service/workouts.js";
+import { useSubmit, useLoaderData, Link, useSearchParams } from "remix";
+import { startCase } from "lodash";
 import { useState } from "react";
-import { getLocations, getWorkoutsPerLocation } from "~/service/location.js";
+import { getLocations, addLocation } from "~/service/location.js";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
-import dayjs from "dayjs";
-
-export let action = async ({ request }) => {
-  const form = await request.formData();
-  const userId = form.get("userId");
-  const name =
-    form.get("name") === ""
-      ? `${dayjs().format("dddd")} workout`
-      : form.get("name");
-  const datetime = new Date(`${form.get("datetime")}:00`);
-  let location = form.get("location");
-  location = location?.toLowerCase()?.replace(" ", "_") ?? null;
-  const workoutObjectId = await createWorkout({
-    name,
-    datetime,
-    location,
-    userId,
-  });
-
-  return redirect(`/workout/${workoutObjectId}/currentExercises`);
-};
 
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
@@ -40,6 +10,14 @@ export let loader = async ({ request }) => {
   const locations = await getLocations(user);
 
   return locations;
+};
+
+export let action = async ({ request }) => {
+  const form = await request.formData();
+  if (!form.get("locationName")) {
+    return form;
+  }
+  return await addLocation(form.get("locationName"), form.get("userId"));
 };
 
 export default function ManageLocationsRoute() {
@@ -52,22 +30,34 @@ export default function ManageLocationsRoute() {
     <UserAuthorisedComponent setUser={setUser}>
       <div className="container">
         <div className="m-5">
-          <h4 className="title is-4">Manage Saved Locations</h4>
+          <h4 className="title is-3">Saved Locations</h4>
           {locations.map((e) => (
             <Link
               to={`./${e.id}/?user=${searchParams.get("user")}`}
               className="box"
             >
               <div>
-                <div className="title is-6 mb-1">{startCase(e.name)}</div>
+                <div className="title is-6">{startCase(e.name)}</div>
               </div>
             </Link>
           ))}
-          <div className="mt-4">
-            {locations.length === 0 && "No locations yet"}
+          <div className="mt-5">
+            <b>Add Location</b>
+            <hr class="dropdown-divider" />
+            <form method="post" className="level is-mobile form-control">
+              <input className="input is-info" name="locationName"></input>
+              <input
+                className="input is-info"
+                name="userId"
+                type="hidden"
+                value={searchParams.get("user")}
+              ></input>
+              <button className="button is-light is-info ml-1" type="submit">
+                Submit
+              </button>
+            </form>
           </div>
         </div>
-        <Outlet />
       </div>
     </UserAuthorisedComponent>
   );

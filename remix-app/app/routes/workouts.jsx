@@ -17,7 +17,8 @@ export default function ViewWorkoutRoute() {
   const userId = searchParams.get("user");
   return (
     <UserAuthorisedComponent idPredicate={(id) => id === userId}>
-      <div className="container m-5">
+      <div className=" m-5 container">
+        <div className="title is-3 mb-3">Workouts</div>
         {workouts.length === 0 && "No workouts yet"}
         {workouts.map((workout) => (
           <Link className="box" to={`/workout/${workout.id}/currentExercises`}>

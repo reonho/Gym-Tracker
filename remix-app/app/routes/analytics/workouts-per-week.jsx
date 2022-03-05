@@ -37,7 +37,7 @@ export default function PersonalBestRoute() {
   return (
     <>
       <div className="">
-        <div className="title is-4 mb-2">Personal Records</div>
+        <div className="title is-4 mb-2">Workouts per Week</div>
         <hr className="mt-2 mb-3" />
         <WorkoutPerWeek workoutsPerWeek={workouts} />
       </div>

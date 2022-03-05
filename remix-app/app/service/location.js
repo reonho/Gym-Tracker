@@ -27,7 +27,15 @@ export async function deleteLocation(locationId) {
 export async function renameLocation(locationId, locationName) {
   const { data, error } = await supabase
     .from("location")
-    .upsert({ id: locationId, name: locationName });
+    .update({ name: locationName })
+    .match({ id: locationId });
+  return data;
+}
 
+export async function addLocation(locationName, userId) {
+  const { data, error } = await supabase
+    .from("location")
+    .insert({ name: locationName, user_id: userId });
+  console.log(data, error);
   return data;
 }

@@ -37,7 +37,8 @@ export let action = async ({ request }) => {
     // DELETE
     const deleted = await deleteLocation(form.get("locationId"));
     if (deleted !== null) {
-      return redirect("/");
+      const user = deleted?.[0]?.user_id;
+      return redirect(user ? `/locations?user=${user}` : "/");
     }
   }
   return "Success";
@@ -66,12 +67,12 @@ export default function LocationRoute() {
         {showInput && (
           <div className="level-item">
             <input
-              className="input is-small is-info"
+              className="input is-info"
               value={renameInput}
               onChange={(e) => setRenameInput(e.target.value)}
             ></input>
             <div
-              className="button is-small is-light is-info ml-1"
+              className="button is-light is-info ml-1"
               onClick={() => {
                 fetcher.submit(
                   { locationId: locationId, locationName: renameInput },
@@ -87,7 +88,7 @@ export default function LocationRoute() {
         {!showInput && (
           <div className="buttons level-right">
             <div
-              className="button is-small is-light is-info"
+              className="button is-light is-info"
               onClick={() => setShowInput((prev) => !prev)}
             >
               Rename

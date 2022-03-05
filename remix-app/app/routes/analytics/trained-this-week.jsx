@@ -48,7 +48,8 @@ export default function AnalyticsRoute() {
           </i>
         </div>
         <WeeklyTrainingSets weeklySets={weeklySets} />
-        {Object.keys(weeklySets).length === 0 && "No workouts yet this week"}
+        {Object.keys(weeklySets).length === 0 &&
+          "Nothing trained yet this week"}
       </div>
     );
   };

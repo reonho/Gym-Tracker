@@ -36,6 +36,7 @@ export let loader = async ({ request }) => {
 export default function CreateWorkoutRoute() {
   const locations = useLoaderData();
   const [user, setUser] = useState();
+  const [hasLocation, setHasLocation] = useState();
 
   const getCurrentDateTime = () => {
     const date = new Date();
@@ -103,22 +104,31 @@ export default function CreateWorkoutRoute() {
               <div className="field-body ">
                 <p className="control">
                   <input
+                    onChange={(e) => {
+                      !e.target.value
+                        ? setHasLocation(false)
+                        : setHasLocation(true);
+                    }}
                     type="text"
-                    autocomplete="off"
-                    className="input select "
+                    autoComplete="off"
+                    className={`input select `}
                     list="locations"
                     name="location"
                   />
                   <datalist id="locations" className="">
                     {locations.map((item) => (
-                      <option key={item} value={startCase(item.name)} />
+                      <option key={item.name} value={startCase(item.name)} />
                     ))}
                   </datalist>
                 </p>
               </div>
             </div>
             <hr />
-            <button className="button is-dark " type="submit">
+            <button
+              className="button is-dark "
+              type="submit"
+              disabled={!hasLocation}
+            >
               Create New
             </button>
           </Form>

@@ -1,10 +1,17 @@
 import supabase from "~/supabase.js";
 export async function createWorkout(workout) {
-  const addLocation = await supabase
+  let checkLocation = await supabase
     .from("location")
-    .upsert({ name: workout.location, user_id: workout.userId });
+    .select("id")
+    .match({ name: workout.location, user_id: workout.userId });
 
-  const locationId = addLocation?.data?.[0].id;
+  let locationId;
+  if (checkLocation.data.length === 0) {
+    checkLocation = await supabase
+      .from("location")
+      .insert({ name: workout.location, user_id: workout.userId });
+  }
+  locationId = checkLocation.data?.[0].id;
 
   const { data, error } = await supabase.from("workout").insert([
     {

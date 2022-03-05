@@ -82,7 +82,7 @@ export default function StartNewWorkoutRoute() {
     >
       <>
         {workoutMetaData(workout)}
-        <div className="m-5 container">
+        <div className="p-5 container">
           <div
             className="message-body notification mb-3"
             style={{

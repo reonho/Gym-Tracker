@@ -9,7 +9,7 @@ export let loader = async ({ request }) => {
   let user = url.searchParams.get("user");
   const exercises = await getExercisesForUser(user);
 
-  let exercise = url.searchParams.get("exercise_id") ?? exercises[0].id;
+  let exercise = url.searchParams.get("exercise_id") ?? exercises[0]?.id;
   const sets = await getBestSetPerWorkoutExercise(user, exercise);
 
   const setsByExercise = groupBy(sets, (s) => s.exercise_id)[exercise];
@@ -57,7 +57,7 @@ export default function ProgressRoute() {
         {singleExerciseChart ? (
           <ProgressiveOverload progressiveOverload={singleExerciseChart} />
         ) : (
-          "No workouts yet"
+          "Nothing trained yet"
         )}
       </div>
     </>

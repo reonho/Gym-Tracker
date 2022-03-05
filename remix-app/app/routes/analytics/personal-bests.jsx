@@ -25,11 +25,11 @@ export default function PersonalBestRoute() {
     <>
       <div className="">
         <div className="title is-4 mb-1">Personal Bests</div>
-        <div>Weight of set with max volume</div>
         <hr className="mt-2 mb-3" />
+        <i>Weight of set with max volume</i>
       </div>
 
-      {singleExerciseChart ? (
+      {listBestSets.length ? (
         <PersonalBests bestSets={listBestSets} />
       ) : (
         "No workouts yet"

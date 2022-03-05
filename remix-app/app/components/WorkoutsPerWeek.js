@@ -20,7 +20,7 @@ export default function WorkoutsPerWeek(props) {
         labels: Object.keys(props.workoutsPerWeek),
         datasets: [
           {
-            label: "# of Sets per Week",
+            label: "# Workouts per Week",
             data: Object.values(props.workoutsPerWeek),
             backgroundColor: Object.values(props.workoutsPerWeek).map(
               (e) =>
