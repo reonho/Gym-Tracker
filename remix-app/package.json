@@ -25,8 +25,7 @@
   "devDependencies": {
     "@remix-run/dev": "^1.2.1",
     "@remix-run/serve": "^1.2.1",
-    "cross-env": "^7.0.3",
-    "prisma": "^3.9.2"
+    "cross-env": "^7.0.3"
   },
   "engines": {
     "node": ">=14"
