@@ -1,5 +1,5 @@
 import { CgClose } from "react-icons/cg";
-import { RiCheckFill } from "react-icons/ri";
+import { RiCheckFill, RiSeparator } from "react-icons/ri";
 import { useState } from "react";
 
 export default function SetInput(props) {
@@ -54,6 +54,7 @@ export default function SetInput(props) {
       </div>
       <div className="ml-1">
         <button
+          disabled={!(props.weight && props.repetitions)}
           onClick={() => {
             setCompleted((complete) => {
               updateDb(weight, repetitions, !complete, props.index);

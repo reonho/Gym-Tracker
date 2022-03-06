@@ -9,9 +9,12 @@ import UserAuthorisedComponent from "../../components/UserAuthorisedComponent";
 import { useState } from "react";
 import Stopwatch from "../../components/Stopwatch";
 import dayjs from "dayjs";
+import { MdOutlineMenu } from "react-icons/md";
 
 const utc = require("dayjs/plugin/utc");
+const relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(utc);
+dayjs.extend(relativeTime);
 
 export let loader = async ({ params }) => {
   const workout = await getWorkout(params.workoutId);
@@ -34,10 +37,16 @@ export let action = async ({ request, params }) => {
   }
 };
 
-function toTime(seconds) {
-  var date = new Date(null);
-  date.setMilliseconds(seconds);
-  return date.toISOString().split("T")[1].split(".")[0];
+function toTime(time) {
+  return (
+    <div>
+      {time > 24 * 36 * 60 * 1000 &&
+        (Math.floor(time / 24 / 36 / 60 / 1000) % 24) + "day(s) "}
+      <span>{("0" + (Math.floor(time / 3600000) % 60)).slice(-2)}:</span>
+      <span>{("0" + Math.floor((time / 60000) % 60)).slice(-2)}:</span>
+      <span>{("0" + Math.floor((time / 1000) % 60)).slice(-2)}</span>
+    </div>
+  );
 }
 
 function workoutMetaData(workout) {
@@ -75,6 +84,9 @@ export default function StartNewWorkoutRoute() {
   const workout = useLoaderData()[0];
   const fetcher = useFetcher();
   const [userId, setUserId] = useState();
+  const [showMenu, setShowMenu] = useState(false);
+  const [showChangeTime, setShowChangeTime] = useState(false);
+  const [customDate, setCustomDate] = useState(null);
   return (
     <UserAuthorisedComponent
       setUserId={setUserId}
@@ -94,10 +106,10 @@ export default function StartNewWorkoutRoute() {
             {workout?.datetime_end ? (
               <>
                 <div>
-                  <div className="title is-6">Workout Completed. </div>
+                  <div className="title is-6 mb-1">Workout Completed. </div>
                   {toTime(
-                    dayjs(workout?.datetime_end) -
-                      dayjs(workout?.datetime_start)
+                    dayjs.utc(workout.datetime_end) -
+                      dayjs.utc(workout.datetime_start)
                   )}
                 </div>
               </>
@@ -118,11 +130,10 @@ export default function StartNewWorkoutRoute() {
                 <div></div>
               </div>
             )}
-
             <div className="buttons">
               {!workout.datetime_end && (
                 <button
-                  className="button is-light is-success is-small"
+                  className="button is-light is-success"
                   onClick={() =>
                     fetcher.submit(
                       {
@@ -137,20 +148,85 @@ export default function StartNewWorkoutRoute() {
                 </button>
               )}
               <button
-                className="button is-light is-danger is-small"
-                onClick={() =>
-                  fetcher.submit(
-                    {
-                      workout_id: workout.id,
-                    },
-                    { method: "DELETE" }
-                  )
-                }
+                className=" button is-light  mb-2"
+                onClick={() => setShowMenu((e) => !e)}
               >
-                Delete
+                <MdOutlineMenu />
               </button>
+              {showMenu && (
+                <div
+                  className="box p-2"
+                  style={{
+                    position: "absolute",
+                    top: "80%",
+                    right: "3%",
+                    zIndex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <div>
+                    <button
+                      className="button is-light is-danger  is-fullwidth"
+                      onClick={() =>
+                        fetcher.submit(
+                          {
+                            workout_id: workout.id,
+                          },
+                          { method: "DELETE" }
+                        )
+                      }
+                    >
+                      Delete Workout
+                    </button>
+                  </div>
+
+                  <div>
+                    <button
+                      onClick={() => setShowChangeTime((e) => !e)}
+                      className="button is-light is-fullwidth"
+                    >
+                      Set Finish Time
+                    </button>
+                  </div>
+
+                  {showChangeTime && (
+                    <div className="level is-mobile">
+                      <input
+                        className="input"
+                        type="datetime-local"
+                        onSelect={(e) => {
+                          if (
+                            dayjs(e.target.value) >
+                            dayjs.utc(workout.datetime_start)
+                          ) {
+                            setCustomDate(e.target.value);
+                          }
+                        }}
+                      ></input>
+                      <button
+                        disabled={!customDate}
+                        className="button is-light is-success m-0 ml-1"
+                        onClick={() => {
+                          fetcher.submit(
+                            {
+                              workout_id: workout.id,
+                              end: dayjs(customDate).utc(),
+                            },
+                            { method: "POST" }
+                          );
+                          setShowMenu(false);
+                        }}
+                      >
+                        Finish
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
+
           <Outlet />
         </div>
       </>

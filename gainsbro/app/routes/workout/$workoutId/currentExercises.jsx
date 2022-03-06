@@ -10,6 +10,7 @@ import {
   deleteExerciseFromWorkout,
   getExercisesForWorkout,
 } from "~/service/workouts.js";
+import { MdOutlineMenu } from "react-icons/md";
 import SetInput from "~/components/SetInput";
 
 export let loader = async ({ params }) => {
@@ -39,8 +40,10 @@ export let action = async ({ request }) => {
   const form = await request.formData();
   switch (request.method) {
     case "PUT":
-      await updateSet(form);
-      break;
+      if (form.get("type") === "set") {
+        await updateSet(form);
+        break;
+      }
     case "POST":
       await addSet(form);
       break;
@@ -74,11 +77,11 @@ export default function CurrentExercisesRoute() {
       fetcher.submit(
         {
           workout_id: workoutId,
-          exercise_name: exercise_name,
           repetitions: repetitions,
           weight: weight,
           index: index,
           completed: completed,
+          type: "set",
         },
         { method: "PUT" }
       );
@@ -97,7 +100,8 @@ export default function CurrentExercisesRoute() {
     return (
       <>
         <div className="box mb-3">
-          <div className="title is-5 mb-1">{exercise_name}</div>
+          <div className="title is-5 mb-1">{exercise_name} </div>
+
           {previousBestSet && (
             <p>
               <i> PB:</i> {previousBestSet.weight} x{" "}
@@ -117,7 +121,7 @@ export default function CurrentExercisesRoute() {
               submitFunc={submitSetForm}
             />
           ))}
-          <div className="level is-mobile mt-5">
+          <buttons className="level is-mobile mt-5">
             <div style={{ width: "85%" }}>
               <button
                 onClick={() =>
@@ -128,6 +132,7 @@ export default function CurrentExercisesRoute() {
                 + Set
               </button>
             </div>
+
             <button
               onClick={() =>
                 fetcher.submit(
@@ -135,11 +140,11 @@ export default function CurrentExercisesRoute() {
                   { method: "DELETE" }
                 )
               }
-              className="button is-light is-small ml-2"
+              className="button is-light is-danger is-small ml-1"
             >
               Delete
             </button>
-          </div>
+          </buttons>
         </div>
       </>
     );

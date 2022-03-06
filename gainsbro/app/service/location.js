@@ -38,6 +38,5 @@ export async function addLocation(locationName, userId) {
   const { data, error } = await supabase
     .from("location")
     .insert({ name: locationName, user_id: userId });
-  console.log(data, error);
   return data;
 }

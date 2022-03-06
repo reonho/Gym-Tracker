@@ -12,9 +12,8 @@ export async function createWorkout(workout) {
       .insert({ name: workout.location, user_id: workout.userId });
   }
   locationId = checkLocation.data?.[0].id;
-  console.log(locationId);
 
-  const { data, error } = await supabase.from("workout").insert([
+  const { data } = await supabase.from("workout").insert([
     {
       name: workout.name,
       datetime_start: workout.datetime,
@@ -23,7 +22,6 @@ export async function createWorkout(workout) {
       user_id: workout.userId,
     },
   ]);
-  console.log(data, error);
   return data[0].id;
 }
 
@@ -36,12 +34,12 @@ export async function deleteWorkout(workout_id) {
   const associated_workout_exercises =
     "(" + workout.data.map((e) => e.workout_exercise_id).toString() + ")";
 
-  const _deleteSets = await supabase
+  await supabase
     .from("set")
     .delete()
     .filter("workout_exercise", "in", associated_workout_exercises);
 
-  const _deleteWorkoutExercise = await supabase
+  await supabase
     .from("workout_exercise")
     .delete()
     .match({ workout: workout_id });
@@ -55,7 +53,7 @@ export async function deleteWorkout(workout_id) {
 }
 
 export async function getWorkout(id) {
-  let { data: workout, error } = await supabase
+  let { data: workout } = await supabase
     .from("workouts_with_location")
     .select("*")
     .eq("id", id);
@@ -63,7 +61,7 @@ export async function getWorkout(id) {
 }
 
 export async function getExercisesForWorkout(id) {
-  let { data, error } = await supabase
+  let { data } = await supabase
     .from("setsforworkout")
     .select("*")
     .eq("workout_id", id)
@@ -73,7 +71,7 @@ export async function getExercisesForWorkout(id) {
 }
 
 export async function finishWorkout(id, datetime) {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("workout")
     .update({ datetime_end: datetime })
     .match({ id: id });
@@ -81,7 +79,7 @@ export async function finishWorkout(id, datetime) {
 }
 
 export async function getWorkoutsForUser(userId) {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("workouts_with_location")
     .select("*")
     .eq("user_id", userId);
@@ -120,12 +118,12 @@ export async function postExercisetoWorkout({ workout_id, exercise_id }) {
 }
 
 export async function deleteExerciseFromWorkout(form) {
-  const deleteSets = await supabase
+  await supabase
     .from("set")
     .delete()
     .match({ workout_exercise: form.get("workout_exercise_id") });
 
-  const deleteWorkoutExercise = await supabase
+  await supabase
     .from("workout_exercise")
     .delete()
     .match({ id: form.get("workout_exercise_id") });

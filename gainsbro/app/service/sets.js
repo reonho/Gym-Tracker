@@ -4,11 +4,12 @@ var weekOfYear = require("dayjs/plugin/weekOfYear");
 dayjs.extend(weekOfYear);
 
 export async function deleteSet(formSet) {
-  const delSet = await supabase
+  await supabase
     .from("set")
     .delete()
     .match({ id: formSet.get("index") });
 }
+
 export async function addSet(formSet) {
   const add = await supabase.from("set").insert([
     {
@@ -41,10 +42,11 @@ export async function updateSet(formSet) {
   if (completedForSet !== null) {
     submissionSet.completed = completedForSet === "true";
   }
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("set")
     .update(submissionSet)
     .match({ id: formSet.get("index") });
+  return data;
 }
 //default filters for latest week
 export async function getSetsForUser(userId, filter_start, filter_end) {
