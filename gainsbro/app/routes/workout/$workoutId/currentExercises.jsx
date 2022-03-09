@@ -1,5 +1,6 @@
 import { Outlet, useLoaderData, Link, useParams, useFetcher } from "remix";
 import lodash, { startCase, groupBy, maxBy } from "lodash";
+import { useState } from "react";
 import {
   updateSet,
   addSet,
@@ -10,6 +11,7 @@ import {
   deleteExerciseFromWorkout,
   getExercisesForWorkout,
 } from "~/service/workouts.js";
+import { MdOutlineMenu } from "react-icons/md";
 import SetInput from "~/components/SetInput";
 
 export let loader = async ({ params }) => {
@@ -39,8 +41,10 @@ export let action = async ({ request }) => {
   const form = await request.formData();
   switch (request.method) {
     case "PUT":
-      await updateSet(form);
-      break;
+      if (form.get("type") === "set") {
+        await updateSet(form);
+        break;
+      }
     case "POST":
       await addSet(form);
       break;
@@ -59,6 +63,7 @@ export let action = async ({ request }) => {
 
 export default function CurrentExercisesRoute() {
   const { exerciseSets, bestSetByExercise } = useLoaderData();
+  const [showDelete, setShowDelete] = useState();
   const { workoutId } = useParams();
   const fetcher = useFetcher();
 
@@ -74,11 +79,11 @@ export default function CurrentExercisesRoute() {
       fetcher.submit(
         {
           workout_id: workoutId,
-          exercise_name: exercise_name,
           repetitions: repetitions,
           weight: weight,
           index: index,
           completed: completed,
+          type: "set",
         },
         { method: "PUT" }
       );
@@ -97,7 +102,8 @@ export default function CurrentExercisesRoute() {
     return (
       <>
         <div className="box mb-3">
-          <div className="title is-5 mb-1">{exercise_name}</div>
+          <div className="title is-5 mb-1">{exercise_name} </div>
+
           {previousBestSet && (
             <p>
               <i> PB:</i> {previousBestSet.weight} x{" "}
@@ -117,7 +123,7 @@ export default function CurrentExercisesRoute() {
               submitFunc={submitSetForm}
             />
           ))}
-          <div className="level is-mobile mt-5">
+          <buttons className="level is-mobile mt-5">
             <div style={{ width: "85%" }}>
               <button
                 onClick={() =>
@@ -128,18 +134,50 @@ export default function CurrentExercisesRoute() {
                 + Set
               </button>
             </div>
-            <button
-              onClick={() =>
-                fetcher.submit(
-                  { ...exerciseSetForm, type: "exercise" },
-                  { method: "DELETE" }
-                )
-              }
-              className="button is-light is-small ml-2"
+
+            <div
+              className={`${
+                showDelete?.[exerciseId] ?? false ? "is-active" : ""
+              } dropdown is-right`}
             >
-              Delete
-            </button>
-          </div>
+              <div className="dropdown-trigger">
+                <button
+                  className="button is-light is-small ml-1"
+                  aria-haspopup="true"
+                  aria-controls="dropdown-menu6"
+                  onClick={() =>
+                    setShowDelete((e) => ({
+                      ...e,
+                      [exerciseId]: !(e?.[exerciseId] ?? false),
+                    }))
+                  }
+                >
+                  <MdOutlineMenu />
+                </button>
+              </div>
+              <div
+                className="dropdown-menu p-0 m-0"
+                id="dropdown-menu6"
+                role="menu"
+              >
+                <div className="dropdown-content p-0 mt-1">
+                  <div className="dropdown-item p-2 m-0">
+                    <button
+                      className="button is-light is-danger is-small is-fullwidth m-0 p-0"
+                      onClick={() =>
+                        fetcher.submit(
+                          { ...exerciseSetForm, type: "exercise" },
+                          { method: "DELETE" }
+                        )
+                      }
+                    >
+                      Delete Exercise
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </buttons>
         </div>
       </>
     );

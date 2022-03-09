@@ -1,5 +1,5 @@
 import { CgClose } from "react-icons/cg";
-import { RiCheckFill } from "react-icons/ri";
+import { RiCheckFill, RiSeparator } from "react-icons/ri";
 import { useState } from "react";
 
 export default function SetInput(props) {

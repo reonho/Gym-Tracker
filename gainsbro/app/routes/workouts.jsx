@@ -24,14 +24,21 @@ export default function ViewWorkoutRoute() {
         <div className="title is-3 mb-3">Workouts</div>
         {workouts.length === 0 && "No workouts yet"}
         {workouts.map((workout) => (
-          <Link className="box" to={`/workout/${workout.id}/currentExercises`}>
+          <Link
+            key={"workout.id"}
+            className="box"
+            to={`/workout/${workout.id}/currentExercises`}
+          >
             <div className="level is-mobile">
               <div>
                 <p className="title mb-2 is-5">
-                  {dayjs.utc(workout.datetime_start).toDateString()}
+                  {dayjs
+                    .utc(workout.datetime_start)
+                    .local()
+                    .format("dddd, MMM D YY")}
                 </p>
                 <div className="title mb-2 is-6">
-                  {dayjs.utc(workout.datetime_start).toLocaleTimeString()}
+                  {dayjs.utc(workout.datetime_start).local().format("h:mm A")}
                   {" - "}
                   {workout.name}
                 </div>

@@ -76,8 +76,8 @@ export default function CreateWorkoutRoute() {
               name.setAttribute(
                 "value",
                 event.target.namePlaceholder.value === ""
-                  ? event.target.namePlaceholder.placeholder
-                  : event.target.namePlaceholder
+                  ? `${dayjs(getCurrentDateTime()).format("dddd")} workout`
+                  : event.target.namePlaceholder.value
               );
 
               event.target.append(userId);
@@ -97,7 +97,9 @@ export default function CreateWorkoutRoute() {
                     className="input"
                     name="namePlaceholder"
                     type="text"
-                    placeholder={`${dayjs().format("dddd")} workout`}
+                    placeholder={`${dayjs(getCurrentDateTime()).format(
+                      "dddd"
+                    )} workout`}
                   />
                 </p>
               </div>
