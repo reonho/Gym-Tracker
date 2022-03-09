@@ -16,6 +16,7 @@
     "@remix-run/serve": "^1.2.3",
     "@supabase/supabase-js": "^1.30.7",
     "chart.js": "^3.7.1",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.10.8",
     "dotenv": "^16.0.0",
     "firebase": "^9.6.7",

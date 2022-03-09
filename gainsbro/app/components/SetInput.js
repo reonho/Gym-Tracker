@@ -54,7 +54,6 @@ export default function SetInput(props) {
       </div>
       <div className="ml-1">
         <button
-          disabled={!(props.weight && props.repetitions)}
           onClick={() => {
             setCompleted((complete) => {
               updateDb(weight, repetitions, !complete, props.index);

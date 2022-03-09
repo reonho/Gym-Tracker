@@ -1,5 +1,6 @@
 import { Outlet, useLoaderData, Link, useParams, useFetcher } from "remix";
 import lodash, { startCase, groupBy, maxBy } from "lodash";
+import { useState } from "react";
 import {
   updateSet,
   addSet,
@@ -62,6 +63,7 @@ export let action = async ({ request }) => {
 
 export default function CurrentExercisesRoute() {
   const { exerciseSets, bestSetByExercise } = useLoaderData();
+  const [showDelete, setShowDelete] = useState();
   const { workoutId } = useParams();
   const fetcher = useFetcher();
 
@@ -133,17 +135,48 @@ export default function CurrentExercisesRoute() {
               </button>
             </div>
 
-            <button
-              onClick={() =>
-                fetcher.submit(
-                  { ...exerciseSetForm, type: "exercise" },
-                  { method: "DELETE" }
-                )
-              }
-              className="button is-light is-danger is-small ml-1"
+            <div
+              className={`${
+                showDelete?.[exerciseId] ?? false ? "is-active" : ""
+              } dropdown is-right`}
             >
-              Delete
-            </button>
+              <div className="dropdown-trigger">
+                <button
+                  className="button is-light is-small ml-1"
+                  aria-haspopup="true"
+                  aria-controls="dropdown-menu6"
+                  onClick={() =>
+                    setShowDelete((e) => ({
+                      ...e,
+                      [exerciseId]: !(e?.[exerciseId] ?? false),
+                    }))
+                  }
+                >
+                  <MdOutlineMenu />
+                </button>
+              </div>
+              <div
+                className="dropdown-menu p-0 m-0"
+                id="dropdown-menu6"
+                role="menu"
+              >
+                <div className="dropdown-content p-0 mt-1">
+                  <div className="dropdown-item p-2 m-0">
+                    <button
+                      className="button is-light is-danger is-small is-fullwidth m-0 p-0"
+                      onClick={() =>
+                        fetcher.submit(
+                          { ...exerciseSetForm, type: "exercise" },
+                          { method: "DELETE" }
+                        )
+                      }
+                    >
+                      Delete Exercise
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </buttons>
         </div>
       </>

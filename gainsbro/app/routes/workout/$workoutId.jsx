@@ -147,12 +147,6 @@ export default function StartNewWorkoutRoute() {
                   Finish
                 </button>
               )}
-              <button
-                className=" button is-light  mb-2"
-                onClick={() => setShowMenu((e) => !e)}
-              >
-                <MdOutlineMenu />
-              </button>
               {showMenu && (
                 <div
                   className="box p-2"
@@ -167,7 +161,7 @@ export default function StartNewWorkoutRoute() {
                 >
                   <div>
                     <button
-                      className="button is-light is-danger  is-fullwidth"
+                      className="button is-light is-danger is-small is-fullwidth"
                       onClick={() =>
                         fetcher.submit(
                           {
@@ -184,7 +178,7 @@ export default function StartNewWorkoutRoute() {
                   <div>
                     <button
                       onClick={() => setShowChangeTime((e) => !e)}
-                      className="button is-light is-fullwidth"
+                      className="button is-small is-light is-fullwidth"
                     >
                       Set Finish Time
                     </button>
@@ -193,7 +187,7 @@ export default function StartNewWorkoutRoute() {
                   {showChangeTime && (
                     <div className="level is-mobile">
                       <input
-                        className="input"
+                        className="input is-small"
                         type="datetime-local"
                         onSelect={(e) => {
                           if (
@@ -206,7 +200,7 @@ export default function StartNewWorkoutRoute() {
                       ></input>
                       <button
                         disabled={!customDate}
-                        className="button is-light is-success m-0 ml-1"
+                        className="button is-small is-light is-success m-0 ml-1"
                         onClick={() => {
                           fetcher.submit(
                             {
@@ -224,6 +218,12 @@ export default function StartNewWorkoutRoute() {
                   )}
                 </div>
               )}
+              <button
+                className=" button is-light  mb-2"
+                onClick={() => setShowMenu((e) => !e)}
+              >
+                <MdOutlineMenu />
+              </button>
             </div>
           </div>
 

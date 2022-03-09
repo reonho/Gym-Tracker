@@ -22,6 +22,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules /app/node_modules
 ADD package.json package-lock.json ./
 # RUN npm prune --production
+# RUN npm install cross-env
 
 # Build the app
 FROM base as build
