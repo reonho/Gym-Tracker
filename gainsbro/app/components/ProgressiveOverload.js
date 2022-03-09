@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import Chart from "chart.js/auto";
 import { Tooltip } from "chart.js";
-Chart.register([Tooltip]);
 import dayjs from "dayjs";
 import { sortBy } from "lodash";
+Chart.register([Tooltip]);
 
 export default function ProgressiveOverload(props) {
   const [ctx, setCtx] = useState(null);

@@ -38,6 +38,18 @@ export default function AnalyticsRoute() {
                       Workouts per Week
                     </a>
                   </li>
+                  <li>
+                    <a
+                      className={
+                        location.pathname === "/analytics/schedule"
+                          ? "is-active"
+                          : null
+                      }
+                      href={`/analytics/schedule?user=${user}`}
+                    >
+                      Schedule
+                    </a>
+                  </li>
                 </ul>
                 <ul className="menu-list"></ul>
                 <p className="menu-label">Strength Stats</p>

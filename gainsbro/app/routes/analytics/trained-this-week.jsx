@@ -19,7 +19,6 @@ export let loader = async ({ request }) => {
   let url = new URL(request.url);
   let user = url.searchParams.get("user");
   const userWorkouts = await getSetsForUser(user, weekStartingOnDay);
-  const exerciseList = await getExercises();
 
   return lodash(userWorkouts)
     .groupBy((set) => set.muscle_group)

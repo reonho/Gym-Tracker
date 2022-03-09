@@ -31,7 +31,7 @@ export let loader = async ({ request }) => {
   );
 };
 
-export default function PersonalBestRoute() {
+export default function WorkoutsPerWeekRoute() {
   const workouts = useLoaderData();
 
   return (
