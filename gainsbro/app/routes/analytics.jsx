@@ -50,6 +50,18 @@ export default function AnalyticsRoute() {
                       Schedule
                     </a>
                   </li>
+                  <li>
+                    <a
+                      className={
+                        location.pathname === "/analytics/statistics"
+                          ? "is-active"
+                          : null
+                      }
+                      href={`/analytics/statistics?user=${user}`}
+                    >
+                      Statistics
+                    </a>
+                  </li>
                 </ul>
                 <ul className="menu-list"></ul>
                 <p className="menu-label">Strength Stats</p>

@@ -130,6 +130,7 @@ export default function StartNewWorkoutRoute() {
                 <div></div>
               </div>
             )}
+
             <div className="buttons">
               {!workout.datetime_end && (
                 <button

@@ -19,8 +19,6 @@ export let loader = async ({ request }) => {
 export default function PersonalBestRoute() {
   const listBestSets = useLoaderData();
 
-  const [singleExerciseChart, setSingleExerciseChart] = useState(listBestSets);
-
   return (
     <>
       <div className="">
