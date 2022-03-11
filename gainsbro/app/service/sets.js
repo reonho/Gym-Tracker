@@ -67,14 +67,14 @@ export async function getSetsForUser(userId, filter_start, filter_end) {
 
 export async function getBestSetPerWorkoutExercise(userId, exerciseId) {
   if (exerciseId) {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("max_volume_for_workout_exercise")
       .select("*")
       .eq("user_id", userId)
       .eq("exercise_id", exerciseId);
     return data;
   } else {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("max_volume_for_workout_exercise")
       .select("*")
       .eq("user_id", userId);

@@ -10,7 +10,7 @@ export let loader = async ({ request }) => {
   const sets = await getBestSetPerWorkoutExercise(user);
   const bestSetByExercise = lodash(sets)
     .groupBy((s) => s.exercise_id)
-    .mapValues((e) => maxBy(e, (s) => s.weight))
+    .mapValues((e) => maxBy(e, (s) => s.weight * s.repetitions))
     .value();
 
   return Object.values(bestSetByExercise);

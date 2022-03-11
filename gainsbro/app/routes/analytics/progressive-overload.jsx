@@ -1,7 +1,7 @@
 import { getExercisesForUser } from "~/service/exercises";
 import { getBestSetPerWorkoutExercise } from "~/service/sets";
 import { Form, useLoaderData, useSubmit, useSearchParams } from "remix";
-import lodash, { startCase, groupBy } from "lodash";
+import { startCase, groupBy } from "lodash";
 import ProgressiveOverload from "../../components/ProgressiveOverload";
 
 export let loader = async ({ request }) => {
