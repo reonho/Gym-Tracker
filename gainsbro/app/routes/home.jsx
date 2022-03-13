@@ -39,10 +39,7 @@ export default function HomeRoute() {
                   </span>
                   Create Workout
                 </a>
-                <a
-                  className="panel-block"
-                  href={`/analytics/trained-this-week?user=${userId}`}
-                >
+                <a className="panel-block" href={`/analytics/?user=${userId}`}>
                   <span className="panel-icon">
                     <RiLineChartFill size={15} />
                   </span>

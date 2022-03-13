@@ -22,9 +22,12 @@ export default function WorkoutsPerWeek(props) {
           {
             label: "# Workouts per Week",
             data: Object.values(props.workoutsPerWeek),
+            borderRadius: 5,
             backgroundColor: Object.values(props.workoutsPerWeek).map(
               (e) =>
-                `rgba(100,${Math.random() * 255},${Math.random() * 255},0.3)`
+                `rgba(${Math.random() * 255},${Math.random() * 255},${
+                  Math.random() * 255
+                },0.3)`
             ),
           },
         ],

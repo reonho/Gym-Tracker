@@ -1,9 +1,11 @@
-import { useLoaderData } from "remix";
+import { useLoaderData, useSearchParams } from "remix";
 import { getSetsForUser } from "~/service/sets";
 import lodash, { startCase } from "lodash";
 import dayjs from "dayjs";
 var weekOfYear = require("dayjs/plugin/weekOfYear");
+var utc = require("dayjs/plugin/utc");
 dayjs.extend(weekOfYear);
+dayjs.extend(utc);
 
 const weekdays = [
   "Sunday",
@@ -17,27 +19,29 @@ const weekdays = [
 
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
+  let week = url.searchParams.get("week");
   let user = url.searchParams.get("user");
-  let workouts = await getSetsForUser(user);
-
-  workouts = lodash(workouts)
-    .groupBy((w) => dayjs(w.datetime_start).day())
-    .mapValues((v) =>
-      lodash(v)
-        .groupBy((set) => set.muscle_group)
-        .mapValues((e) => e.length)
-    );
+  const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
+  let workouts = await getSetsForUser(user, weekStartingOnDay);
 
   return workouts;
 };
 
-const weekStartingOnDay = dayjs()
-  .week(dayjs().week())
-  .startOf("week")
-  .startOf("day");
-
 export default function WeeklyScheduleRoute() {
-  const workouts = useLoaderData();
+  let workoutData = useLoaderData();
+  const [searchParams] = useSearchParams();
+  const week = searchParams.get("week");
+  const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
+
+  const workouts = lodash(workoutData)
+    .groupBy((w) => dayjs.utc(w.datetime_start).local().format("dddd"))
+    .mapValues((v) =>
+      lodash(v)
+        .groupBy((set) => set.muscle_group)
+        .mapValues((e) => e.length)
+        .value()
+    )
+    .value();
 
   return (
     <div>
@@ -59,33 +63,43 @@ export default function WeeklyScheduleRoute() {
       <br />
       <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
         {[...Array(7).keys()].map((item, index) => (
-          <div key={index} style={{ width: "50%" }}>
-            <article
-              className={`message is-small ${
-                workouts?.[String(item)] ? "is-secondary" : "is-light"
-              } m-3 `}
-            >
-              <div className="message-header">{`${
-                weekdays[item]
-              } - ${weekStartingOnDay
-                .add(index, "day")
-                .format("DD/MM/YYYY")}`}</div>
-              <div className="message-body">
-                {Object.entries(workouts?.[String(item)] ?? { REST: null }).map(
-                  ([k, v], index) => {
-                    return k !== "REST" ? (
-                      <div key={index}>
-                        <b>
-                          {startCase(k)} - {v}
-                        </b>
-                      </div>
-                    ) : (
-                      <b>Rest Day 💪</b>
-                    );
-                  }
-                )}
+          <div key={item} style={{ width: "50%" }}>
+            {workouts?.[weekdays[item]] ? (
+              <article
+                key={index}
+                className={`message is-small is-secondary m-3 `}
+              >
+                <div className="message-header">{`${
+                  weekdays[item]
+                } - ${weekStartingOnDay
+                  .add(index, "day")
+                  .format("DD/MM/YYYY")}`}</div>
+                <div className="message-body">
+                  {Object.entries(workouts?.[weekdays[item]]).map(
+                    ([k, v], index) => {
+                      return (
+                        <div key={index}>
+                          <b>
+                            {startCase(k)} - {v}
+                          </b>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              </article>
+            ) : (
+              <div className="message is-small is-light m-3">
+                <div className="message-header">{`${
+                  weekdays[item]
+                } - ${weekStartingOnDay
+                  .add(index, "day")
+                  .format("DD/MM/YYYY")}`}</div>
+                <div className="message-body">
+                  <b>Rest Day 💪</b>
+                </div>
               </div>
-            </article>
+            )}
           </div>
         ))}
       </div>

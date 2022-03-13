@@ -1,6 +1,6 @@
 import { getSetsForUser } from "~/service/sets.js";
 import { getExercises } from "~/service/exercises";
-import { useLoaderData, useActionData, Link } from "remix";
+import { useLoaderData, useSearchParams } from "remix";
 import dayjs from "dayjs";
 import lodash from "lodash";
 import WeeklyTrainingSets from "~/components/WeeklyTrainingSets";
@@ -8,16 +8,14 @@ import WeeklyTrainingSets from "~/components/WeeklyTrainingSets";
 var weekOfYear = require("dayjs/plugin/weekOfYear");
 dayjs.extend(weekOfYear);
 
-const weekStartingOnDay = dayjs()
-  .week(dayjs().week())
-  .startOf("week")
-  .startOf("day");
-
 export let action = async ({ request }) => {};
 
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
   let user = url.searchParams.get("user");
+  let week = url.searchParams.get("week");
+  const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
+
   const userWorkouts = await getSetsForUser(user, weekStartingOnDay);
 
   return lodash(userWorkouts)
@@ -25,8 +23,11 @@ export let loader = async ({ request }) => {
     .mapValues((e) => e.length);
 };
 
-export default function AnalyticsRoute() {
+export default function ThisWeekRoute() {
   const weeklySets = useLoaderData();
+  const [searchParams] = useSearchParams();
+  const week = searchParams.get("week");
+  const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
 
   const renderTrainedThisWeek = () => {
     return (
@@ -43,7 +44,7 @@ export default function AnalyticsRoute() {
           </b>{" "}
           <br />
           <i>
-            Week {dayjs().week()} of {weekStartingOnDay.format("YYYY")}
+            Week {week} of {weekStartingOnDay.format("YYYY")}
           </i>
         </div>
         <WeeklyTrainingSets weeklySets={weeklySets} />

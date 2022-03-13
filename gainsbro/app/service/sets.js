@@ -81,3 +81,11 @@ export async function getBestSetPerWorkoutExercise(userId, exerciseId) {
     return data;
   }
 }
+
+export async function getLifetimeStatistics(userId) {
+  const { data } = await supabase
+    .from("lifetime_stats")
+    .select("*")
+    .eq("user_id", userId);
+  return data;
+}

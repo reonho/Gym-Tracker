@@ -1,5 +1,5 @@
 import { useLoaderData } from "remix";
-import { getSetsForUser } from "~/service/sets";
+import { getLifetimeStatistics, getSetsForUser } from "~/service/sets";
 import lodash, { startCase, reduce, pick, omit } from "lodash";
 import dayjs from "dayjs";
 import { getWorkoutsForUser } from "~/service/workouts";
@@ -9,45 +9,59 @@ dayjs.extend(weekOfYear);
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
   let user = url.searchParams.get("user");
-  let sets = await getSetsForUser(user);
+  let stats = await getLifetimeStatistics(user);
   let workouts = await getWorkoutsForUser(user);
-
-  const computeStats = (sets) => {
-    const stat = reduce(
-      sets,
-      (a, b) => ({
-        weight: a.weight + b.weight,
-        reps: a.reps + b.repetitions,
-        sets: a.sets + 1,
-      }),
-      { weight: 0, reps: 0, sets: 0 }
-    );
-    stat.volume = stat.weight * stat.reps;
-
-    return stat;
-  };
-  const groupedSets = lodash(sets)
-    .groupBy(
-      (s) =>
-        `${startCase(s.exercise_name)}${
-          s?.variant ? ` (${startCase(s.variant)})` : ""
-        }`
-    )
-    .mapValues(computeStats);
 
   const totalTimeSpent = workouts
     .map((w) => dayjs(w.datetime_end).diff(w.datetime_start, "minute"))
     .reduce((a, b) => a + b);
-  return [groupedSets, totalTimeSpent];
+  return [stats, totalTimeSpent, Math.round(totalTimeSpent / workouts.length)];
 };
+
 export default function StatisticsRoute() {
-  const [workouts, totalTimeSpent] = useLoaderData();
-  const columnNames = [
-    "exercise",
-    ...Object.keys(Object.entries(workouts)[0][1]),
-  ];
-  const rows = Object.entries(workouts).map(([k, v], index) => [
-    k,
+  const [stats, totalTimeSpent, averageTimeSpent] = useLoaderData();
+  const abbv = {
+    AW: "Average Weight",
+    AR: "Average Repetitions",
+    Reps: "Total Repetitions",
+    Vol: "Total Volume",
+    Num: "Total Number of Sets",
+  };
+
+  const formatNumber = (num, digits = 2) => {
+    const lookup = [
+      { value: 1, symbol: "" },
+      { value: 1e3, symbol: "k" },
+      { value: 1e6, symbol: "M" },
+      { value: 1e9, symbol: "G" },
+      { value: 1e12, symbol: "T" },
+      { value: 1e15, symbol: "P" },
+      { value: 1e18, symbol: "E" },
+    ];
+    const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    var item = lookup
+      .slice()
+      .reverse()
+      .find(function (item) {
+        return num >= item.value;
+      });
+    return item
+      ? (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol
+      : "0";
+  };
+
+  console.log(formatNumber(900000));
+
+  let workoutsTable = stats.map((w) => ({
+    Exercise: `${startCase(w.name)} ${
+      w?.variant ? `(${startCase(w.variant)})` : ""
+    }`,
+    Reps: Math.round(w.total_reps),
+    Vol: Math.round(w.sum_volume),
+    Num: w.num_sets,
+  }));
+  const columnNames = [...Object.keys(Object.entries(workoutsTable)[0][1])];
+  const rows = Object.entries(workoutsTable).map(([k, v], index) => [
     ...Object.values(v),
   ]);
 
@@ -55,48 +69,74 @@ export default function StatisticsRoute() {
     <div className="container">
       <div className="title is-4 m-2">Statistics</div>
       <hr className="mt-2 mb-3" />
-      <div className="m-2">Total lifetime metrics</div>
+      <div className="m-2">Total lifetime metrics:</div>
       <div
         className="notification"
         style={{ flexDirection: "column", display: "flex" }}
       >
         <p>
-          <b>Total Time Spent</b> : <i>{totalTimeSpent} min</i>
+          <b>Total Time: </b>
+          <i>{totalTimeSpent} min</i>
+        </p>
+        <p>
+          <b>Average Time: </b>
+          <i>{averageTimeSpent} min</i>
         </p>
 
         {columnNames
-          .filter((c) => c !== "exercise")
+          .filter((c) => c !== "Exercise")
           .map((name) => (
             <p key={name}>
-              <b>Total {startCase(name)}</b> :{" "}
-              <i>{reduce(Object.values(workouts), (a, b) => a + b[name], 0)}</i>
+              <b>
+                {abbv[name]} ({name}):{" "}
+              </b>
+              <i>
+                {name === "Vol"
+                  ? formatNumber(
+                      reduce(
+                        Object.values(workoutsTable),
+                        (a, b) => a + b[name],
+                        0
+                      )
+                    )
+                  : reduce(
+                      Object.values(workoutsTable),
+                      (a, b) => a + b[name],
+                      0
+                    )}
+              </i>
             </p>
           ))}
       </div>
 
-      <div className="m-2">Total lifetime metrics by exercise </div>
-      <table className="table is-striped">
-        <thead>
-          <tr>
-            {columnNames.map((e, index) => (
-              <th key={index}>{startCase(e)}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            <tr key={index}>
-              {row.map((ele, eleIndex) =>
-                eleIndex >= 1 ? (
-                  <td key={eleIndex}>{ele}</td>
-                ) : (
-                  <th key={eleIndex}>{ele}</th>
-                )
-              )}
+      <div className="m-2">Total lifetime metrics by exercise: </div>
+      <div className="container">
+        <table
+          style={{ overflow: "scroll", fontSize: "1rem" }}
+          className="table is-striped is-narrow is-hoverable is-fullwidth"
+        >
+          <thead>
+            <tr>
+              {columnNames.map((e, index) => (
+                <th key={index}>{e}</th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr key={index}>
+                {row.map((ele, eleIndex) =>
+                  eleIndex >= 1 ? (
+                    <td key={eleIndex}>{formatNumber(ele)}</td>
+                  ) : (
+                    <th key={eleIndex}>{ele}</th>
+                  )
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

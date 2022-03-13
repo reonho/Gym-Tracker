@@ -1,13 +1,21 @@
 import { CgClose } from "react-icons/cg";
-import { RiCheckFill, RiSeparator } from "react-icons/ri";
+import { RiCheckFill } from "react-icons/ri";
 import { useState } from "react";
+import { debounce } from "lodash";
 
 export default function SetInput(props) {
   const [weight, setWeight] = useState(props.weight);
   const [repetitions, setRepetitions] = useState(props.repetitions);
   const [completed, setCompleted] = useState(props.completed);
-  const updateDb = (weight, repetitions, completed, index) =>
-    props.submitFunc(weight, repetitions, completed, index);
+  const updateDb = debounce(
+    (weight, repetitions, completed, index) =>
+      props.submitFunc(weight, repetitions, completed, index),
+    200,
+    {
+      leading: true,
+      trailing: true,
+    }
+  );
   return (
     <div
       className="container mb-2 p-2"
@@ -25,9 +33,11 @@ export default function SetInput(props) {
           type="number"
           placeholder="Weight (kg)"
           value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-          onBlur={() => {
-            updateDb(weight, repetitions, completed, props.index);
+          onChange={(e) => {
+            setWeight(() => {
+              updateDb(e.target.value, repetitions, completed, props.index);
+              return e.target.value;
+            });
           }}
         />
       </div>
@@ -38,9 +48,11 @@ export default function SetInput(props) {
           type="number"
           placeholder="Reps"
           value={repetitions}
-          onChange={(e) => setRepetitions(e.target.value)}
-          onBlur={() => {
-            updateDb(weight, repetitions, completed, props.index);
+          onChange={(e) => {
+            setRepetitions(() => {
+              updateDb(weight, e.target.value, completed, props.index);
+              return e.target.value;
+            });
           }}
         />
       </div>

@@ -10,18 +10,18 @@ export default function UserAuthorisedComponent(props) {
     result ? setUser(result) : setUser(null);
   });
 
-  useEffect(async () => {
+  useEffect(() => {
     if (user === null) {
       navigate("/");
     }
     if (user) {
-      props.setUser ? props.setUser(user) : null;
+      let _ = props.setUser ? props.setUser(user) : null;
       const uid = user.uid;
 
       if (props.idPredicate && !props.idPredicate(uid)) {
         navigate("/home");
       } else {
-        props.setUserId ? props.setUserId(uid) : null;
+        let _ = props.setUserId ? props.setUserId(uid) : null;
       }
     }
   }, [user]);

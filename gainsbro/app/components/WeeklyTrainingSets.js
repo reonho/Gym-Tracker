@@ -17,15 +17,19 @@ export default function WeeklyTrainingSets(props) {
     setCtx(document.getElementById("weeklySets"));
     const weeklySetsChart = new Chart(ctx, {
       type: "bar",
+
       data: {
         labels: Object.keys(sets).map((e) => startCase(e)),
         datasets: [
           {
             label: "# of Sets",
+            borderRadius: 5,
             data: Object.values(sets),
             backgroundColor: Object.values(sets).map(
               (e) =>
-                `rgba(100,${Math.random() * 255},${Math.random() * 255},0.3)`
+                `rgba(${Math.random() * 255},${Math.random() * 255},${
+                  Math.random() * 255
+                },0.4)`
             ),
           },
         ],

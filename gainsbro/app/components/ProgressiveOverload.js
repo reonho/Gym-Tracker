@@ -12,7 +12,9 @@ export default function ProgressiveOverload(props) {
     (e) => e.datetime_start
   );
   useEffect(() => {
-    let color = `rgba(155,${Math.random() * 255},${Math.random() * 255},0.2)`;
+    let color = `rgba(${Math.random() * 255},${Math.random() * 255},${
+      Math.random() * 255
+    },0.3)`;
     setCtx(document.getElementById("progressiveOverload"));
     let chartStatus = Chart.getChart("progressiveOverload"); // <canvas> id
     if (chartStatus != undefined) {
@@ -33,7 +35,7 @@ export default function ProgressiveOverload(props) {
             label: "Volume Progress (Weight x Reps)",
             data: exerciseProgress.map((e) => e.max_volume),
             fill: true,
-            tension: 0.1,
+            tension: 0.4,
             borderColor: color,
             backgroundColor: color,
           },

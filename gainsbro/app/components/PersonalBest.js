@@ -26,7 +26,7 @@ export default function PersonalRecords(props) {
             data: props.bestSets.map((value) => value.weight),
             borderRadius: 5,
             backgroundColor: props.bestSets.map((e) => {
-              return `rgba(${100},${Math.random() * 255}, ${
+              return `rgba(${Math.random() * 255},${Math.random() * 255}, ${
                 Math.random() * 255
               },0.4)`;
             }),
