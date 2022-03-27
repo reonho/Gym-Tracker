@@ -1,6 +1,5 @@
 import { getSetsForUser } from "~/service/sets.js";
-import { getExercises } from "~/service/exercises";
-import { useLoaderData, useSearchParams } from "remix";
+import { Form, useLoaderData, useSearchParams, useSubmit } from "remix";
 import dayjs from "dayjs";
 import lodash from "lodash";
 import WeeklyTrainingSets from "~/components/WeeklyTrainingSets";
@@ -16,7 +15,11 @@ export let loader = async ({ request }) => {
   let week = url.searchParams.get("week");
   const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
 
-  const userWorkouts = await getSetsForUser(user, weekStartingOnDay);
+  const userWorkouts = await getSetsForUser(
+    user,
+    weekStartingOnDay,
+    weekStartingOnDay.add(1, "week")
+  );
 
   return lodash(userWorkouts)
     .groupBy((set) => set.muscle_group)
@@ -28,6 +31,8 @@ export default function ThisWeekRoute() {
   const [searchParams] = useSearchParams();
   const week = searchParams.get("week");
   const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
+  const currentWeek = dayjs().week();
+  const submit = useSubmit();
 
   const renderTrainedThisWeek = () => {
     return (
@@ -42,14 +47,38 @@ export default function ThisWeekRoute() {
               .subtract(1, "day")
               .format("DD/MM/YYYY")}
           </b>{" "}
-          <br />
+          -{" "}
           <i>
             Week {week} of {weekStartingOnDay.format("YYYY")}
           </i>
+          <br />
+          <div className="select mt-2 mb-2">
+            <Form method="get">
+              <select
+                className="input"
+                value={week}
+                onChange={(e) => {
+                  submit({
+                    week: e.target.value,
+                    user: searchParams.getAll("user"),
+                  });
+                }}
+              >
+                {Array(parseInt(currentWeek))
+                  .fill(0)
+                  .map((item, index) => {
+                    return (
+                      <option value={index + 1} key={index + 1}>
+                        Week {index + 1}
+                      </option>
+                    );
+                  })}
+              </select>
+            </Form>
+          </div>
         </div>
+        {Object.keys(weeklySets).length === 0 && "Nothing trained this week"}
         <WeeklyTrainingSets weeklySets={weeklySets} />
-        {Object.keys(weeklySets).length === 0 &&
-          "Nothing trained yet this week"}
       </div>
     );
   };

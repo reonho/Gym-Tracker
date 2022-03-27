@@ -57,9 +57,7 @@ export default function ProgressiveOverload(props) {
   });
   return (
     <>
-      {Object.keys(exerciseProgress).length > 0 && (
-        <canvas id="progressiveOverload"></canvas>
-      )}
+      <canvas id="progressiveOverload"></canvas>
     </>
   );
 }

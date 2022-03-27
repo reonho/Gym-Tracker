@@ -28,6 +28,7 @@ export let action = async ({ params, request }) => {
 export default function AddExerciseRoute() {
   const { workoutId } = useParams();
   const [selected, setSelected] = useState();
+  const [disabled, setDisabled] = useState(false);
   const exercises = useLoaderData();
   const fetcher = useFetcher();
   const exNameToIdMap = mapValues(
@@ -71,10 +72,11 @@ export default function AddExerciseRoute() {
           <div className="level-item">
             <button
               onClick={() => {
+                setDisabled(true);
                 fetcher.submit({ exercise: selected }, { method: "POST" });
               }}
               className="button is-small is-dark "
-              disabled={!selected}
+              disabled={!selected || disabled}
             >
               Add
             </button>

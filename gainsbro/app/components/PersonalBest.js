@@ -51,6 +51,8 @@ export default function PersonalRecords(props) {
     });
   });
   return (
-    <>{props.bestSets.length > 0 && <canvas id="personalRecords"></canvas>}</>
+    <>
+      <canvas id="personalRecords"></canvas>
+    </>
   );
 }

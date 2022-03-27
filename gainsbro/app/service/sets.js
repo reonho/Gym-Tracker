@@ -8,6 +8,10 @@ export async function deleteSet(formSet) {
     .from("set")
     .delete()
     .match({ id: formSet.get("index") });
+  // clean up
+  const { data } = await supabase.from("empty_workout_exercises").select("*");
+  const ids = data.map((workout_exercise) => workout_exercise.id);
+  await supabase.from("workout_exercise").delete().in("id", ids);
 }
 
 export async function addSet(formSet) {

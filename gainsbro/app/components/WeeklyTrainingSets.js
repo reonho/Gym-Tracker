@@ -8,7 +8,7 @@ export default function WeeklyTrainingSets(props) {
 
   useEffect(() => {
     let chartStatus = Chart.getChart("weeklySets"); // <canvas> id
-    if (chartStatus != undefined) {
+    if (chartStatus) {
       chartStatus.destroy();
     }
     if (Object.keys(sets).length === 0) {
@@ -44,6 +44,8 @@ export default function WeeklyTrainingSets(props) {
     });
   });
   return (
-    <>{Object.keys(sets).length > 0 && <canvas id="weeklySets"></canvas>}</>
+    <>
+      <canvas id="weeklySets"></canvas>
+    </>
   );
 }

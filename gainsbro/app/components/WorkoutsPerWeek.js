@@ -45,9 +45,7 @@ export default function WorkoutsPerWeek(props) {
   });
   return (
     <>
-      {Object.keys(props.workoutsPerWeek).length > 0 && (
-        <canvas id="workoutsPerWeek"></canvas>
-      )}
+      <canvas id="workoutsPerWeek"></canvas>
     </>
   );
 }
