@@ -1,4 +1,4 @@
-import { useLoaderData, useSearchParams } from "remix";
+import { Form, useLoaderData, useSearchParams, useSubmit } from "remix";
 import { getSetsForUser } from "~/service/sets";
 import lodash, { startCase } from "lodash";
 import dayjs from "dayjs";
@@ -22,8 +22,11 @@ export let loader = async ({ request }) => {
   let week = url.searchParams.get("week");
   let user = url.searchParams.get("user");
   const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
-  let workouts = await getSetsForUser(user, weekStartingOnDay);
-
+  let workouts = await getSetsForUser(
+    user,
+    weekStartingOnDay,
+    weekStartingOnDay.add(1, "week")
+  );
   return workouts;
 };
 
@@ -32,6 +35,8 @@ export default function WeeklyScheduleRoute() {
   const [searchParams] = useSearchParams();
   const week = searchParams.get("week");
   const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
+  const submit = useSubmit();
+  const currentWeek = dayjs().week();
 
   const workouts = lodash(workoutData)
     .groupBy((w) => dayjs.utc(w.datetime_start).local().format("dddd"))
@@ -55,10 +60,34 @@ export default function WeeklyScheduleRoute() {
             .subtract(1, "day")
             .format("DD/MM/YYYY")}
         </b>{" "}
-        <br />
+        -{" "}
         <i>
           Week {dayjs().week()} of {weekStartingOnDay.format("YYYY")}
         </i>
+      </div>
+      <div className="select mt-2 mb-2">
+        <Form method="get">
+          <select
+            className="input"
+            value={week}
+            onChange={(e) => {
+              submit({
+                week: e.target.value,
+                user: searchParams.getAll("user"),
+              });
+            }}
+          >
+            {Array(parseInt(currentWeek))
+              .fill(0)
+              .map((item, index) => {
+                return (
+                  <option value={index + 1} key={index + 1}>
+                    Week {index + 1}
+                  </option>
+                );
+              })}
+          </select>
+        </Form>
       </div>
       <br />
       <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>

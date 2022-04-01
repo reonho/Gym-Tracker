@@ -2,7 +2,8 @@ import { useLoaderData, Link, useParams, redirect, useFetcher } from "remix";
 import { postExercisetoWorkout } from "~/service/workouts.js";
 import { startCase, groupBy, mapValues } from "lodash";
 import { getExercises } from "~/service/exercises";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Typeahead } from "react-bootstrap-typeahead";
 
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
@@ -27,7 +28,7 @@ export let action = async ({ params, request }) => {
 
 export default function AddExerciseRoute() {
   const { workoutId } = useParams();
-  const [selected, setSelected] = useState();
+  const [selected, setSelected] = useState([]);
   const [disabled, setDisabled] = useState(false);
   const exercises = useLoaderData();
   const fetcher = useFetcher();
@@ -44,36 +45,28 @@ export default function AddExerciseRoute() {
 
   return (
     <div>
-      <p className="control">
-        <input
-          type="text"
-          autoComplete="off"
-          className={`input is-small ${selected === null && "is-danger"}`}
-          list="exercises"
-          name="exercise"
-          onChange={(selected) => {
-            setSelected(exNameToIdMap[selected.target.value] ?? null);
-          }}
-        />
-        <datalist id="exercises">
-          {exercises.map((exercise) => (
-            <option
-              key={exercise.id}
-              value={`${startCase(exercise.name)} ${
-                exercise?.variant ? `(${startCase(exercise.variant)})` : ""
-              }`}
-            />
-          ))}
-        </datalist>
-      </p>
-
+      <Typeahead
+        id="exercise_options"
+        onChange={setSelected}
+        options={exercises.map(
+          (exercise) =>
+            `${startCase(exercise.name)} ${
+              exercise?.variant ? `(${startCase(exercise.variant)})` : ""
+            }`
+        )}
+        placeholder="Choose Exercise"
+        selected={selected}
+      />
       <div className="level is-mobile mt-3">
         <div className="level-left">
           <div className="level-item">
             <button
               onClick={() => {
                 setDisabled(true);
-                fetcher.submit({ exercise: selected }, { method: "POST" });
+                fetcher.submit(
+                  { exercise: exNameToIdMap[selected] },
+                  { method: "POST" }
+                );
               }}
               className="button is-small is-dark "
               disabled={!selected || disabled}

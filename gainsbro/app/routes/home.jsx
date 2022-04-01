@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
 import { RiAddBoxFill, RiLineChartFill } from "react-icons/ri";
 import { GiStrong } from "react-icons/gi";
 import { MdLocationOn } from "react-icons/md";
 import styles from "../styles/styles.module.css";
+import FirebaseLogin from "~/components/FirebaseLogin";
 export function links() {
   return [{ rel: "stylesheet", href: styles }];
 }
@@ -27,7 +28,7 @@ export default function HomeRoute() {
           </div>
           {user ? (
             <div className="level-right container">
-              <nav className="panel is-black m-5 ">
+              <nav className="panel is-black m-5">
                 <p className="panel-heading">Hi, {user && user.displayName}</p>
                 <a></a>
                 <a
@@ -72,6 +73,8 @@ export default function HomeRoute() {
                   Workout, Smarter.
                 </div>
                 <div>Please log in to continue...</div>
+                <br />
+                <FirebaseLogin />
               </div>
             </div>
           )}

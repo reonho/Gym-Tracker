@@ -1,6 +1,6 @@
 import { CgClose } from "react-icons/cg";
 import { RiCheckFill } from "react-icons/ri";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { debounce } from "lodash";
 
 export default function SetInput(props) {
@@ -16,6 +16,9 @@ export default function SetInput(props) {
       trailing: true,
     }
   );
+  useEffect(() => {
+    updateDb(weight, repetitions, completed, props.index);
+  }, [weight, repetitions, completed]);
   return (
     <div
       className="container mb-2 p-2"
@@ -34,10 +37,7 @@ export default function SetInput(props) {
           placeholder="Weight (kg)"
           value={weight}
           onChange={(e) => {
-            setWeight(() => {
-              updateDb(e.target.value, repetitions, completed, props.index);
-              return e.target.value;
-            });
+            setWeight(e.target.value);
           }}
         />
       </div>
@@ -68,7 +68,6 @@ export default function SetInput(props) {
         <button
           onClick={() => {
             setCompleted((complete) => {
-              updateDb(weight, repetitions, !complete, props.index);
               return !complete;
             });
           }}
