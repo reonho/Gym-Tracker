@@ -44,7 +44,7 @@ export default function ManageLocationsRoute() {
           <div className="mt-5">
             <b>Add Location</b>
             <hr class="dropdown-divider" />
-            <form method="post" className="level is-mobile form-control">
+            <form method="post" className="level is-mobile">
               <input className="input is-info" name="locationName"></input>
               <input
                 className="input is-info"

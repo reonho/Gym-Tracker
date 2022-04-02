@@ -53,7 +53,7 @@ function workoutMetaData(workout) {
   return (
     <div className="hero is-light mt-3">
       <div className="hero-body ">
-        <div className="title is-4 mb-3">{workout?.name}</div>
+        <div className="title mb-3">{workout?.name}</div>
 
         <div className="icon-text m-1">
           <span className="icon">

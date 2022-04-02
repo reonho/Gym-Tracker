@@ -72,7 +72,7 @@ export default function SetInput(props) {
             });
           }}
           className={`button is-small is-light ${
-            props.completed ? "is-primary" : ""
+            completed ? "is-primary" : ""
           }`}
         >
           <RiCheckFill size={15} />

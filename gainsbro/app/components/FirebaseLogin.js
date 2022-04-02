@@ -27,7 +27,7 @@ export default function FirebaseLogin(props) {
   return (
     <div>
       {!user && (
-        <button onClick={googleLogin} className="button is-black">
+        <button onClick={googleLogin} className="button is-black soraFont">
           Login
         </button>
       )}
@@ -36,7 +36,7 @@ export default function FirebaseLogin(props) {
           <div className={`dropdown ${dropdownActive ? "is-active" : ""}`}>
             <div className="dropdown-trigger">
               <button
-                className="button is-black is-fullwidth "
+                className="button is-black is-fullwidth soraFont "
                 aria-haspopup="true"
                 aria-controls="dropdown-menu"
                 onClick={() => {
@@ -50,11 +50,9 @@ export default function FirebaseLogin(props) {
               </button>
             </div>
             <div className="dropdown-menu" id="dropdown-menu" role="menu">
-              <div className="dropdown-content">
-                <a onClick={logout} className="dropdown-item">
-                  Logout
-                </a>
-              </div>
+              <a onClick={logout} className="dropdown-item">
+                Logout
+              </a>
             </div>
           </div>
         </>

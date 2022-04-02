@@ -8,10 +8,15 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "remix";
+import styles from "./styles/styles.module.css";
+
 import { initializeApp } from "firebase/app";
 import FirebaseLogin from "~/components/FirebaseLogin.js";
 export function meta() {
   return { title: "GainsBro" };
+}
+export function links() {
+  return [{ rel: "stylesheet", href: styles }];
 }
 
 export let loader = async () => {
@@ -30,9 +35,9 @@ export let loader = async () => {
 
 function NavBar({ children }) {
   return (
-    <nav className="navbar is-black">
+    <nav className="navbar is-black p-0 ">
       <div className="navbar-brand">
-        <Link className="navbar-item is-size-5 " to="/home">
+        <Link className="navbar-item is-size-5 soraFont" to="/home">
           <div className="has-text-white has-text-weight-bold">GAINS</div>
           BRO
         </Link>
@@ -76,6 +81,10 @@ export default function App() {
           href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap"
           rel="stylesheet"
         />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500&display=swap"
+          rel="stylesheet"
+        ></link>
         <link rel="icon" href={require("../assets/logo.png")}></link>
         <link
           rel="stylesheet"

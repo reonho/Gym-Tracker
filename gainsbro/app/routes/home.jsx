@@ -3,11 +3,8 @@ import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
 import { RiAddBoxFill, RiLineChartFill } from "react-icons/ri";
 import { GiStrong } from "react-icons/gi";
 import { MdLocationOn } from "react-icons/md";
-import styles from "../styles/styles.module.css";
 import FirebaseLogin from "~/components/FirebaseLogin";
-export function links() {
-  return [{ rel: "stylesheet", href: styles }];
-}
+import { Link } from "remix";
 
 export default function HomeRoute() {
   const [userId, setUserId] = useState();
@@ -27,51 +24,44 @@ export default function HomeRoute() {
             <img src={require("../../assets/banner.png")}></img>
           </div>
           {user ? (
-            <div className="level-right container">
-              <nav className="panel is-black m-5">
-                <p className="panel-heading">Hi, {user && user.displayName}</p>
+            <div className="level-right ">
+              <nav className="">
+                <p className="box soraFont primary has-text-white title mb-2 is-4">
+                  Hello, {user && user.displayName}
+                </p>
                 <a></a>
-                <a
-                  className="panel-block is-active"
-                  href={`/create?user=${userId}`}
-                >
-                  <span className="panel-icon">
-                    <RiAddBoxFill size={15} />
-                  </span>
-                  Create Workout
-                </a>
-                <a className="panel-block" href={`/analytics/?user=${userId}`}>
-                  <span className="panel-icon">
-                    <RiLineChartFill size={15} />
-                  </span>
-                  Analytics
-                </a>
-                <a className="panel-block" href={`/workouts?user=${userId}`}>
-                  <span className="panel-icon">
-                    <GiStrong size={15} />
-                  </span>
-                  Workouts
-                </a>
-                <a
-                  className="panel-block is-active"
-                  href={`/locations?user=${userId}`}
-                >
-                  <span className="panel-icon">
-                    <MdLocationOn size={15} />
-                  </span>
-                  Locations
-                </a>
+                <div className="p-1">
+                  <Link
+                    className="soraFont box p-4 mb-2"
+                    to={`/create?user=${userId}`}
+                  >
+                    💪 Create Workout
+                  </Link>
+                  <a
+                    className="box p-4 mb-2 soraFont "
+                    href={`/analytics/?user=${userId}`}
+                  >
+                    📈 Analytics
+                  </a>
+                  <a
+                    className="box p-4 mb-2 soraFont"
+                    href={`/workouts?user=${userId}`}
+                  >
+                    📅 Workouts
+                  </a>
+                  <a
+                    className="box p-4 mb-2 soraFont "
+                    href={`/locations?user=${userId}`}
+                  >
+                    🏪 Locations
+                  </a>
+                </div>
               </nav>
             </div>
           ) : (
-            <div className="level-right container">
+            <div className="level-right container soraFont">
               <div>
-                <div
-                  className="title is-1 mb-1"
-                  style={{ fontFamily: "Merriweather" }}
-                >
-                  Workout, Smarter.
-                </div>
+                <div className="title is-1 mb-1">Workout, Smarter.</div>
                 <div>Please log in to continue...</div>
                 <br />
                 <FirebaseLogin />
