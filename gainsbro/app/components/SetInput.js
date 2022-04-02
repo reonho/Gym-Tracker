@@ -27,7 +27,7 @@ export default function SetInput(props) {
         flexDirection: "row",
         justifyContent: "center",
         borderRadius: "1vh",
-        backgroundColor: props.completed ? "#ebfffc" : "#f5f5f5",
+        backgroundColor: completed ? "#ebfffc" : "#f5f5f5",
       }}
     >
       <div>
