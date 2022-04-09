@@ -25,11 +25,10 @@ export default function ManageLocationsRoute() {
   const [user, setUser] = useState();
   const [searchParams] = useSearchParams();
 
-  const submit = useSubmit();
   return (
     <UserAuthorisedComponent setUser={setUser}>
       <div className="container">
-        <div className="m-5">
+        <div className="m-1 mt-5">
           <h4 className="title is-3">Saved Locations</h4>
           {locations.map((e) => (
             <Link

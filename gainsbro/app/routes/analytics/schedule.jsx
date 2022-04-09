@@ -2,30 +2,34 @@ import { Form, useLoaderData, useSearchParams, useSubmit } from "remix";
 import { getSetsForUser } from "~/service/sets";
 import lodash, { startCase } from "lodash";
 import dayjs from "dayjs";
+import { getDateOfISOWeek } from "~/utils/utils";
 var weekOfYear = require("dayjs/plugin/weekOfYear");
 var utc = require("dayjs/plugin/utc");
 dayjs.extend(weekOfYear);
 dayjs.extend(utc);
 
 const weekdays = [
-  "Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
   "Saturday",
+  "Sunday",
 ];
 
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
-  let week = url.searchParams.get("week");
   let user = url.searchParams.get("user");
-  const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
+  const yearWeek = url.searchParams.get("week");
+  let [year, week] = yearWeek.split("-W");
+  const weekStartingOnDay = getDateOfISOWeek(week, year);
   let workouts = await getSetsForUser(
     user,
-    weekStartingOnDay,
-    weekStartingOnDay.add(1, "week")
+    weekStartingOnDay.toDateString(),
+    new Date(
+      weekStartingOnDay.setDate(weekStartingOnDay.getDate() + 7)
+    ).toDateString()
   );
   return workouts;
 };
@@ -33,10 +37,10 @@ export let loader = async ({ request }) => {
 export default function WeeklyScheduleRoute() {
   let workoutData = useLoaderData();
   const [searchParams] = useSearchParams();
-  const week = searchParams.get("week");
-  const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
+  const yearWeek = searchParams.get("week");
+  let [year, week] = yearWeek.split("-W");
+  const weekStartingOnDay = dayjs(getDateOfISOWeek(week, year));
   const submit = useSubmit();
-  const currentWeek = dayjs().week();
 
   const workouts = lodash(workoutData)
     .groupBy((w) => dayjs.utc(w.datetime_start).local().format("dddd"))
@@ -54,41 +58,29 @@ export default function WeeklyScheduleRoute() {
       <hr className="mt-2 mb-3" />
       <div className="container">
         <b>{weekStartingOnDay.format("DD/MM/YYYY")}</b> -{" "}
-        <b>
-          {weekStartingOnDay
-            .add(1, "week")
-            .subtract(1, "day")
-            .format("DD/MM/YYYY")}
-        </b>{" "}
-        -{" "}
-        <i>
-          Week {dayjs().week()} of {weekStartingOnDay.format("YYYY")}
-        </i>
+        <b>{weekStartingOnDay.add(6, "day").format("DD/MM/YYYY")}</b>{" "}
       </div>
-      <div className="select mt-2 mb-2">
+      <div className="mt-2 mb-2">
         <Form method="get">
-          <select
-            className="input"
-            value={week}
-            onChange={(e) => {
-              submit({
-                week: e.target.value,
-                user: searchParams.getAll("user"),
-              });
-            }}
-          >
-            {Array(parseInt(currentWeek))
-              .fill(0)
-              .map((item, index) => {
-                return (
-                  <option value={index + 1} key={index + 1}>
-                    Week {index + 1}
-                  </option>
-                );
-              })}
-          </select>
+          <div className="field-body">
+            <p className="control">
+              <input
+                type="week"
+                className="input"
+                name="week"
+                value={yearWeek}
+                onChange={(e) => {
+                  submit({
+                    week: e.target.value,
+                    user: searchParams.getAll("user"),
+                  });
+                }}
+              />
+            </p>
+          </div>
         </Form>
       </div>
+
       <br />
       <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
         {[...Array(7).keys()].map((item, index) => (

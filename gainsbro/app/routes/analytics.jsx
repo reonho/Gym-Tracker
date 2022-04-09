@@ -2,6 +2,7 @@ import { Outlet, useSearchParams, useLocation, useNavigate } from "remix";
 import UserAuthorisedComponent from "~/components/UserAuthorisedComponent";
 import dayjs from "dayjs";
 import { useEffect } from "react";
+import { getWeekNumber } from "~/utils/utils";
 var weekOfYear = require("dayjs/plugin/weekOfYear");
 dayjs.extend(weekOfYear);
 
@@ -9,14 +10,16 @@ export default function AnalyticsRoute() {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const user = searchParams.get("user");
-  const week = dayjs().week();
+  const date = new Date();
+  const weekYear = `${dayjs().year()}-W${getWeekNumber(date)}`;
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (location.pathname === "/analytics/") {
-      navigate(`/analytics/trained-this-week?user=${user}&week=${week}`);
+      navigate(`/analytics/trained-this-week?user=${user}&week=${weekYear}`);
     }
-  }, [location, navigate, user, week]);
+  }, [location, navigate, user]);
   return (
     <>
       <UserAuthorisedComponent>
@@ -35,9 +38,9 @@ export default function AnalyticsRoute() {
                             ? "is-active"
                             : null
                         }
-                        href={`/analytics/trained-this-week?user=${user}&week=${week}`}
+                        href={`/analytics/trained-this-week?user=${user}&week=${weekYear}`}
                       >
-                        Trained this week
+                        Trained this Week
                       </a>
                     </li>
                     <li>
@@ -59,7 +62,7 @@ export default function AnalyticsRoute() {
                             ? "is-active"
                             : null
                         }
-                        href={`/analytics/schedule?user=${user}&week=${week}`}
+                        href={`/analytics/schedule?user=${user}&week=${weekYear}`}
                       >
                         Schedule
                       </a>

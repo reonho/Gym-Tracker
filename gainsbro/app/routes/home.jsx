@@ -55,6 +55,12 @@ export default function HomeRoute() {
                   >
                     🏪 Locations
                   </a>
+                  <a
+                    className="box p-4 mb-2 soraFont "
+                    href={`/measurements?user=${userId}`}
+                  >
+                    📐 Measurements
+                  </a>
                 </div>
               </nav>
             </div>
