@@ -1,16 +1,8 @@
-import {
-  useSubmit,
-  useLoaderData,
-  Link,
-  useSearchParams,
-  Outlet,
-  useNavigate,
-  useLocation,
-} from "remix";
-import { startCase } from "lodash";
-import { useState } from "react";
+import { Link, Outlet, useLocation, useNavigate, useSearchParams } from "remix";
+import { useEffect, useState } from "react";
 import { getLocations, addLocation } from "~/service/location.js";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
+import { addMeasurement } from "~/service/measurements";
 
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
@@ -20,21 +12,21 @@ export let loader = async ({ request }) => {
   return locations;
 };
 
-export let action = async ({ request }) => {
-  const form = await request.formData();
-  if (!form.get("locationName")) {
-    return form;
-  }
-  return await addLocation(form.get("locationName"), form.get("userId"));
-};
-
 export default function MeasurementRoute() {
   const location = useLocation();
-  const [user, setUser] = useState();
-  const [userId, setUserId] = useState();
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get("user");
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname === "/measurements") {
+      navigate(`/measurements/history?user=${userId}&measurement_id=1`);
+    }
+  }, [location, navigate, userId]);
 
   return (
-    <UserAuthorisedComponent setUser={setUser} setUserId={setUserId}>
+    <UserAuthorisedComponent idPredicate={(id) => id === userId}>
       <div className="container">
         <div className="m-2 mt-5">
           <h4 className="title is-3">Body Measurements</h4>
@@ -47,7 +39,9 @@ export default function MeasurementRoute() {
                     : null
                 }
               >
-                <Link to={`/measurements/history?user=${userId}`}>
+                <Link
+                  to={`/measurements/history?user=${userId}&measurement_id=1`}
+                >
                   Measurement History
                 </Link>
               </li>
@@ -57,7 +51,7 @@ export default function MeasurementRoute() {
                 }
               >
                 <Link to={`/measurements/add?user=${userId}`}>
-                  Add Measurements
+                  Log Measurements
                 </Link>
               </li>
             </ul>

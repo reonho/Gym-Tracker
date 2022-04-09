@@ -10,9 +10,6 @@ export default function PersonalRecords(props) {
       chartStatus.destroy();
     }
 
-    if (Object.keys(props.bestSets).length === 0) {
-      return;
-    }
     setCtx(document.getElementById("personalRecords"));
     const prChart = new Chart(ctx, {
       type: "bar",
@@ -49,6 +46,9 @@ export default function PersonalRecords(props) {
         },
       },
     });
+    return () => {
+      prChart.destroy();
+    };
   });
   return (
     <>

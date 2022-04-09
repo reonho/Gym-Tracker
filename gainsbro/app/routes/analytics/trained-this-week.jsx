@@ -72,8 +72,11 @@ export default function ThisWeekRoute() {
             </Form>
           </div>
         </div>
-        {Object.keys(weeklySets).length === 0 && "Nothing trained this week"}
-        <WeeklyTrainingSets weeklySets={weeklySets} />
+        {Object.keys(weeklySets).length === 0 ? (
+          <div className="m-3">No Workouts</div>
+        ) : (
+          <WeeklyTrainingSets weeklySets={weeklySets} />
+        )}
       </div>
     );
   };

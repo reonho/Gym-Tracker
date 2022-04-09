@@ -59,7 +59,7 @@ export default function HomeRoute() {
                     className="box p-4 mb-2 soraFont "
                     href={`/measurements?user=${userId}`}
                   >
-                    📐 Measurements
+                    🍑 Measurements
                   </a>
                 </div>
               </nav>

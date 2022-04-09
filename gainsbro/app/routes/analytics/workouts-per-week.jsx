@@ -31,7 +31,6 @@ export let loader = async ({ request }) => {
 
 export default function WorkoutsPerWeekRoute() {
   const workouts = useLoaderData();
-  console.log(workouts);
 
   return (
     <>

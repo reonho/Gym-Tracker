@@ -1,24 +1,31 @@
 import { useSubmit, useLoaderData, redirect, useSearchParams } from "remix";
 import { startCase } from "lodash";
 import { useState } from "react";
-import { getLocations, addLocation } from "~/service/location.js";
-import { getMeasurementTypes } from "~/service/measurements.js";
+import { getMeasurementTypes, addMeasurement } from "~/service/measurements.js";
 
 import UserAuthorisedComponent from "../../components/UserAuthorisedComponent";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { getCurrentDateTime } from "~/utils/utils";
 export let loader = async ({ request }) => {
-  let url = new URL(request.url);
   const metrics = await getMeasurementTypes();
   return metrics;
 };
 
 export let action = async ({ request }) => {
-  return redirect("/measurements/add");
+  const form = await request.formData();
+  return await addMeasurement(
+    form.get("metric"),
+    form.get("value"),
+    form.get("user"),
+    form.get("date")
+  );
 };
 
 export default function AddMeasurementRoute() {
-  const metric = useLoaderData();
+  const metrics = useLoaderData().map((m) => ({
+    ...m,
+    measurement_label: startCase(m.measurement),
+  }));
   const [selectedMetric, setSelectedMetric] = useState();
   const [value, setValue] = useState();
   const [user, setUser] = useState();
@@ -35,11 +42,12 @@ export default function AddMeasurementRoute() {
             onSubmit={async (event) => {
               setIsSubmitting(true);
               event.preventDefault();
+
               submit(
                 {
                   date: date,
                   value: value,
-                  metric: selectedMetric,
+                  metric: selectedMetric?.[0]?.id,
                   user: searchParams.getAll("user"),
                 },
                 { method: "POST" }
@@ -55,8 +63,9 @@ export default function AddMeasurementRoute() {
                 <div className="control">
                   <Typeahead
                     id="metric"
-                    onChange={setSelectedMetric}
-                    options={metric.map((m) => startCase(m["measurement"]))}
+                    labelKey={"measurement_label"}
+                    onChange={(m) => setSelectedMetric(m)}
+                    options={metrics}
                     placeholder="Choose Measurement"
                   />
                 </div>
@@ -73,7 +82,7 @@ export default function AddMeasurementRoute() {
                     name="metricValue"
                     type="number"
                     step="any"
-                    onChange={setValue}
+                    onChange={(e) => setValue(e.target.value)}
                   />
                 </p>
               </div>

@@ -11,9 +11,7 @@ export default function WeeklyTrainingSets(props) {
     if (chartStatus) {
       chartStatus.destroy();
     }
-    if (Object.keys(sets).length === 0) {
-      return;
-    }
+
     setCtx(document.getElementById("weeklySets"));
     const weeklySetsChart = new Chart(ctx, {
       type: "bar",
@@ -42,6 +40,9 @@ export default function WeeklyTrainingSets(props) {
         },
       },
     });
+    return () => {
+      weeklySetsChart.destroy();
+    };
   });
   return (
     <>

@@ -8,6 +8,7 @@ dayjs.extend(weekOfYear);
 
 export default function AnalyticsRoute() {
   const [searchParams] = useSearchParams();
+  const userId = searchParams.get("user");
   const location = useLocation();
   const user = searchParams.get("user");
   const date = new Date();
@@ -22,7 +23,7 @@ export default function AnalyticsRoute() {
   }, [location, navigate, user]);
   return (
     <>
-      <UserAuthorisedComponent>
+      <UserAuthorisedComponent idPredicate={(id) => id === userId}>
         <div className="m-2">
           <div className="title is-3 m-5">Analytics</div>
           <div className="level">
