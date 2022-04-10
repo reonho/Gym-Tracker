@@ -1,4 +1,6 @@
 import supabase from "~/supabase.js";
+import dayjs from "dayjs";
+
 export async function createWorkout(workout) {
   let checkLocation = await supabase
     .from("location")
@@ -78,16 +80,31 @@ export async function finishWorkout(id, datetime) {
   return data;
 }
 
-export async function getWorkoutsForUser(userId) {
-  const { data } = await supabase
-    .from("workouts_with_location")
-    .select("*")
-    .eq("user_id", userId);
-  const workouts = data;
+export async function getWorkoutsForUser(userId, startDate, endDate) {
+  if (startDate && endDate) {
+    const { data } = await supabase
+      .from("workouts_with_location")
+      .select("*")
+      .eq("user_id", userId)
+      .gte("datetime_start", dayjs(startDate))
+      .lte("datetime_start", dayjs(endDate));
 
-  return workouts.sort(
-    (a, b) => new Date(b.datetime_start) - new Date(a.datetime_start)
-  );
+    const workouts = data;
+
+    return workouts.sort(
+      (a, b) => new Date(b.datetime_start) - new Date(a.datetime_start)
+    );
+  } else {
+    const { data } = await supabase
+      .from("workouts_with_location")
+      .select("*")
+      .eq("user_id", userId);
+    const workouts = data;
+
+    return workouts.sort(
+      (a, b) => new Date(b.datetime_start) - new Date(a.datetime_start)
+    );
+  }
 }
 
 export async function postExercisetoWorkout({ workout_id, exercise_id }) {

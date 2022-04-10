@@ -57,8 +57,8 @@ export default function WeeklyScheduleRoute() {
       <div className="title is-4 mb-2">Schedule</div>
       <hr className="mt-2 mb-3" />
       <div className="container">
-        <b>{weekStartingOnDay.format("DD/MM/YYYY")}</b> -{" "}
-        <b>{weekStartingOnDay.add(6, "day").format("DD/MM/YYYY")}</b>{" "}
+        <b>{new Date(weekStartingOnDay).toDateString()}</b> -{" "}
+        <b>{new Date(weekStartingOnDay.add(6, "day")).toDateString()}</b>{" "}
       </div>
       <div className="mt-2 mb-2">
         <Form method="get">
