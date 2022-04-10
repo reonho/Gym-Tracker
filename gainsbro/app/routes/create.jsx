@@ -1,10 +1,11 @@
 import { Outlet, Form, useSubmit, useLoaderData, redirect } from "remix";
-import { padStart, startCase } from "lodash";
+import { startCase } from "lodash";
 import { createWorkout } from "~/service/workouts.js";
 import { useState } from "react";
 import { getLocations } from "~/service/location.js";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
 import dayjs from "dayjs";
+import { getCurrentDateTime } from "~/utils/utils";
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
@@ -37,21 +38,12 @@ export default function CreateWorkoutRoute() {
   const [user, setUser] = useState();
   const [hasLocation, setHasLocation] = useState();
 
-  const getCurrentDateTime = () => {
-    const date = new Date();
-    var year = date.getFullYear();
-    var month = padStart(date.getMonth() + 1, 2, 0);
-    var day = padStart(date.getDate(), 2, 0);
-    var hr = padStart(date.getHours(), 2, 0);
-    var min = padStart(date.getMinutes(), 2, 0);
-    return `${year}-${month}-${day}T${hr}:${min}`;
-  };
   const submit = useSubmit();
   return (
     <UserAuthorisedComponent setUser={setUser}>
       <div className="container">
-        <div className="m-5">
-          <h4 className="title is-3">New Workout</h4>
+        <div className="m-2">
+          <h4 className="title is-3 mt-5">Create New Workout</h4>
           <Form
             method="POST"
             onSubmit={async (event) => {

@@ -46,7 +46,10 @@ export default function ManageLocationsRoute() {
   const [searchParams] = useSearchParams();
 
   return (
-    <UserAuthorisedComponent setUser={setUser}>
+    <UserAuthorisedComponent
+      setUser={setUser}
+      idPredicate={(id) => id === searchParams.get("user")}
+    >
       <div className="container">
         <div className="m-5">
           <h4 className="title is-3">Saved Locations</h4>

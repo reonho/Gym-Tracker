@@ -50,8 +50,6 @@ export default function StatisticsRoute() {
       : "0";
   };
 
-  console.log(formatNumber(900000));
-
   let workoutsTable = stats.map((w) => ({
     Exercise: `${startCase(w.name)} ${
       w?.variant ? `(${startCase(w.variant)})` : ""

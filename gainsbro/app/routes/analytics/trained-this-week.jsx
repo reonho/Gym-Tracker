@@ -3,22 +3,27 @@ import { Form, useLoaderData, useSearchParams, useSubmit } from "remix";
 import dayjs from "dayjs";
 import lodash from "lodash";
 import WeeklyTrainingSets from "~/components/WeeklyTrainingSets";
+import { getDateOfISOWeek } from "~/utils/utils.js";
 
 var weekOfYear = require("dayjs/plugin/weekOfYear");
+var customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(weekOfYear);
+dayjs.extend(customParseFormat);
 
 export let action = async ({ request }) => {};
 
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
   let user = url.searchParams.get("user");
-  let week = url.searchParams.get("week");
-  const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
-
+  let yearWeek = url.searchParams.get("week");
+  let [year, week] = yearWeek.split("-W");
+  const weekStartingOnDay = getDateOfISOWeek(week, year);
   const userWorkouts = await getSetsForUser(
     user,
-    weekStartingOnDay,
-    weekStartingOnDay.add(1, "week")
+    weekStartingOnDay.toDateString(),
+    new Date(
+      weekStartingOnDay.setDate(weekStartingOnDay.getDate() + 7)
+    ).toDateString()
   );
 
   return lodash(userWorkouts)
@@ -29,56 +34,49 @@ export let loader = async ({ request }) => {
 export default function ThisWeekRoute() {
   const weeklySets = useLoaderData();
   const [searchParams] = useSearchParams();
-  const week = searchParams.get("week");
-  const weekStartingOnDay = dayjs().week(week).startOf("week").startOf("day");
-  const currentWeek = dayjs().week();
+  const yearWeek = searchParams.get("week");
+  let [year, week] = yearWeek.split("-W");
+  const weekStartingOnDay = getDateOfISOWeek(week, year);
   const submit = useSubmit();
-
   const renderTrainedThisWeek = () => {
     return (
       <div>
         <div className="title is-4 mb-2">Trained this Week</div>
         <hr className="mt-2 mb-3" />
         <div className="container">
-          <b>{weekStartingOnDay.format("DD/MM/YYYY")}</b> -{" "}
+          <b>{weekStartingOnDay.toDateString()}</b> -{" "}
           <b>
-            {weekStartingOnDay
-              .add(1, "week")
-              .subtract(1, "day")
-              .format("DD/MM/YYYY")}
+            {new Date(
+              weekStartingOnDay.setDate(weekStartingOnDay.getDate() + 6)
+            ).toDateString()}
           </b>{" "}
-          -{" "}
-          <i>
-            Week {week} of {weekStartingOnDay.format("YYYY")}
-          </i>
           <br />
-          <div className="select mt-2 mb-2">
+          <div className="mt-2 mb-2">
             <Form method="get">
-              <select
-                className="input"
-                value={week}
-                onChange={(e) => {
-                  submit({
-                    week: e.target.value,
-                    user: searchParams.getAll("user"),
-                  });
-                }}
-              >
-                {Array(parseInt(currentWeek))
-                  .fill(0)
-                  .map((item, index) => {
-                    return (
-                      <option value={index + 1} key={index + 1}>
-                        Week {index + 1}
-                      </option>
-                    );
-                  })}
-              </select>
+              <div className="field-body">
+                <p className="control">
+                  <input
+                    type="week"
+                    className="input"
+                    name="week"
+                    value={yearWeek}
+                    onChange={(e) => {
+                      submit({
+                        week: e.target.value,
+                        user: searchParams.getAll("user"),
+                      });
+                    }}
+                  />
+                </p>
+              </div>
             </Form>
           </div>
         </div>
-        {Object.keys(weeklySets).length === 0 && "Nothing trained this week"}
-        <WeeklyTrainingSets weeklySets={weeklySets} />
+        {Object.keys(weeklySets).length === 0 ? (
+          <div className="m-3">No Workouts</div>
+        ) : (
+          <WeeklyTrainingSets weeklySets={weeklySets} />
+        )}
       </div>
     );
   };

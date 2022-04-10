@@ -28,7 +28,7 @@ export default function ProgressRoute() {
         <div className="title is-4 mb-2">Progressive Overload</div>
         <hr className="mt-2 mb-3" />
         {singleExerciseChart && (
-          <div className="select mb-4 is-small">
+          <div className="select mb-4 ">
             <Form method="get">
               <select
                 className="input"
