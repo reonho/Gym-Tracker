@@ -1,41 +1,13 @@
-# Welcome to Remix!
+# GainsBro
 
-- [Remix Docs](https://remix.run/docs)
+## Overview
 
-## Fly Setup
+GainsBro is a strength tracking application that provides analytics and progress tracking. Primary intention is to provide insight to resistance training.
 
-1. [Install `flyctl`](https://fly.io/docs/getting-started/installing-flyctl/)
+## Tech Specs
 
-2. Sign up and log in to Fly
+- Frontend and Backend developed with react-based framework **remix.run**
+- Web based authentication with **Firebase**
+- Serverless application deployed and hosted on **fly.io**
+- Persistence using hosted database **supabase**
 
-```sh
-flyctl auth signup
-```
-
-3. Setup Fly. It might ask if you want to deploy, say no since you haven't built the app yet.
-
-```sh
-flyctl launch
-```
-
-## Development
-
-From your terminal:
-
-```sh
-npm run dev
-```
-
-This starts your app in development mode, rebuilding assets on file changes.
-
-## Deployment
-
-If you've followed the setup instructions already, all you need to do is run this:
-
-```sh
-npm run deploy
-```
-
-You can run `flyctl info` to get the url and ip address of your server.
-
-Check out the [fly docs](https://fly.io/docs/getting-started/node/) for more information.

@@ -10,8 +10,6 @@ export default function LocationPie(props) {
       chartStatus.destroy();
     }
 
-    console.log(props.locations);
-
     if (Object.keys(props.locations).length === 0) {
       return;
     }
@@ -37,7 +35,10 @@ export default function LocationPie(props) {
         indexAxis: "y",
       },
     });
-  });
+    return () => {
+      locationPie.destroy();
+    };
+  }, [props]);
   return (
     <>
       <canvas id="locationPie"></canvas>
