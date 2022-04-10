@@ -43,7 +43,7 @@ export default function CreateWorkoutRoute() {
     <UserAuthorisedComponent setUser={setUser}>
       <div className="container">
         <div className="m-2">
-          <h4 className="title is-3">Create New Workout</h4>
+          <h4 className="title is-3 mt-5">Create New Workout</h4>
           <Form
             method="POST"
             onSubmit={async (event) => {

@@ -1,16 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate, useSearchParams } from "remix";
-import { useEffect, useState } from "react";
-import { getLocations, addLocation } from "~/service/location.js";
+import { useEffect } from "react";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
-import { addMeasurement } from "~/service/measurements";
-
-export let loader = async ({ request }) => {
-  let url = new URL(request.url);
-  const user = url.searchParams.get("user");
-  const locations = await getLocations(user);
-
-  return locations;
-};
 
 export default function MeasurementRoute() {
   const location = useLocation();
@@ -42,7 +32,7 @@ export default function MeasurementRoute() {
                 <Link
                   to={`/measurements/history?user=${userId}&measurement_id=1`}
                 >
-                  Measurement History
+                  Records
                 </Link>
               </li>
               <li
@@ -51,7 +41,7 @@ export default function MeasurementRoute() {
                 }
               >
                 <Link to={`/measurements/add?user=${userId}`}>
-                  Log Measurements
+                  Log Measurement
                 </Link>
               </li>
             </ul>

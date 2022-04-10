@@ -20,38 +20,40 @@ export default function ViewWorkoutRoute() {
   const userId = searchParams.get("user");
   return (
     <UserAuthorisedComponent idPredicate={(id) => id === userId}>
-      <div className="m-5 container">
-        <div className="title is-3 mb-3">Workouts</div>
-        {workouts.length === 0 && "No workouts yet"}
-        {workouts.map((workout) => (
-          <Link
-            key={"workout.id"}
-            className="box"
-            to={`/workout/${workout.id}/currentExercises`}
-          >
-            <div className="level is-mobile">
-              <div>
-                <p className="title mb-2 is-5">
-                  {dayjs
-                    .utc(workout.datetime_start)
-                    .local()
-                    .format("dddd, MMM D YY")}
-                </p>
-                <div className="title mb-2 is-6">
-                  {dayjs.utc(workout.datetime_start).local().format("h:mm A")}
-                  {" - "}
-                  {workout.name}
+      <div className="container">
+        <div className="m-2">
+          <div className="title is-3 mt-5">Workouts</div>
+          {workouts.length === 0 && "No workouts yet"}
+          {workouts.map((workout) => (
+            <Link
+              key={"workout.id"}
+              className="box"
+              to={`/workout/${workout.id}/currentExercises`}
+            >
+              <div className="level is-mobile">
+                <div>
+                  <p className="title mb-2 is-5">
+                    {dayjs
+                      .utc(workout.datetime_start)
+                      .local()
+                      .format("dddd, MMM D YY")}
+                  </p>
+                  <div className="title mb-2 is-6">
+                    {dayjs.utc(workout.datetime_start).local().format("h:mm A")}
+                    {" - "}
+                    {workout.name}
+                  </div>
+                  {startCase(workout.location_name)}
                 </div>
-                {startCase(workout.location_name)}
+                {workout.datetime_end ? (
+                  <BsCheckCircleFill size={40} className="m-4 p-1" />
+                ) : (
+                  <BsClockHistory size={40} className="m-4 p-1" />
+                )}
               </div>
-              {workout.datetime_end ? (
-                <BsCheckCircleFill size={40} className="m-4 p-1" />
-              ) : (
-                <BsClockHistory size={40} className="m-4 p-1" />
-              )}
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))}
+        </div>
       </div>
     </UserAuthorisedComponent>
   );

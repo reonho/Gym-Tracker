@@ -13,11 +13,16 @@ export let loader = async ({ request }) => {
 
 export let action = async ({ request }) => {
   const form = await request.formData();
-  return await addMeasurement(
+  await addMeasurement(
     form.get("metric"),
     form.get("value"),
     form.get("user"),
     form.get("date")
+  );
+  return redirect(
+    `measurements/history?user=${form.get("user")}&measurement_id=${form.get(
+      "metric"
+    )}`
   );
 };
 

@@ -6,7 +6,7 @@ import { sortBy } from "lodash";
 
 export default function MeasurementProgress(props) {
   const [ctx, setCtx] = useState(null);
-  const exerciseProgress = sortBy(props.history, (e) => e.date);
+  const chronologicalProgress = sortBy(props.history, (e) => dayjs(e.date));
   useEffect(() => {
     let color = `rgba(${Math.random() * 255},${Math.random() * 255},${
       Math.random() * 255
@@ -20,11 +20,13 @@ export default function MeasurementProgress(props) {
     const measurementChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: props.history.map((e) => dayjs(e.date).format("YYYY-MM-DD")),
+        labels: chronologicalProgress.map((e) =>
+          dayjs(e.date).format("YYYY-MM-DD")
+        ),
         datasets: [
           {
             label: props.name,
-            data: props.history.map((e) => e.value),
+            data: chronologicalProgress.map((e) => e.value),
             fill: true,
             tension: 0.4,
             borderColor: color,
