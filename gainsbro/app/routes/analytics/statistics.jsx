@@ -66,7 +66,7 @@ export default function StatisticsRoute() {
   ]);
 
   return (
-    <div className="container">
+    <div>
       <div className="title is-4 m-2">Statistics</div>
       <hr className="mt-2 mb-3" />
       <div className="m-2">Total lifetime metrics:</div>
