@@ -1,4 +1,4 @@
-import { useSubmit, useLoaderData, Link, useSearchParams } from "remix";
+import { useLoaderData, Link, useSearchParams } from "remix";
 import { startCase } from "lodash";
 import { useState } from "react";
 import { getLocations, addLocation } from "~/service/location.js";
@@ -25,12 +25,14 @@ export default function ManageLocationsRoute() {
   const [user, setUser] = useState();
   const [searchParams] = useSearchParams();
 
-  const submit = useSubmit();
   return (
-    <UserAuthorisedComponent setUser={setUser}>
+    <UserAuthorisedComponent
+      setUser={setUser}
+      idPredicate={(id) => id === searchParams.get("user")}
+    >
       <div className="container">
-        <div className="m-5">
-          <h4 className="title is-3">Saved Locations</h4>
+        <div className="m-1">
+          <h4 className="title is-3 mt-5">Saved Locations</h4>
           {locations.map((e) => (
             <Link
               to={`./${e.id}/?user=${searchParams.get("user")}`}

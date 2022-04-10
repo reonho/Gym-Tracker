@@ -20,9 +20,6 @@ export default function ProgressiveOverload(props) {
     if (chartStatus != undefined) {
       chartStatus.destroy();
     }
-    if (exerciseProgress.length === 0) {
-      return;
-    }
 
     const progressiveOverloadChart = new Chart(ctx, {
       type: "line",
@@ -54,6 +51,10 @@ export default function ProgressiveOverload(props) {
         },
       },
     });
+
+    return () => {
+      progressiveOverloadChart.destroy();
+    };
   });
   return (
     <>
