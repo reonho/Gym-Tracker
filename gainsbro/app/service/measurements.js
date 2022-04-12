@@ -40,7 +40,6 @@ export async function editMeasurement(oldMeasurement, newMeasurement) {
     .from("user_measurement")
     .update(newMeasurement)
     .match(oldMeasurement);
-  console.log(error, oldMeasurement, data);
 
   return data;
 }
