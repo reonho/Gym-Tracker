@@ -1,8 +1,6 @@
 import { useState } from "react";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
-import { RiAddBoxFill, RiLineChartFill } from "react-icons/ri";
-import { GiStrong } from "react-icons/gi";
-import { MdLocationOn } from "react-icons/md";
+import { motion } from "framer-motion";
 import FirebaseLogin from "~/components/FirebaseLogin";
 import { Link } from "remix";
 
@@ -11,7 +9,12 @@ export default function HomeRoute() {
   const [user, setUser] = useState();
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <UserAuthorisedComponent setUserId={setUserId} setUser={setUser}>
         <div className="m-6 level">
           <div className="level-left bounce container is-hidden-desktop">
@@ -76,6 +79,6 @@ export default function HomeRoute() {
           )}
         </div>
       </UserAuthorisedComponent>
-    </>
+    </motion.div>
   );
 }

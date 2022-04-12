@@ -1,6 +1,6 @@
 import { Outlet, useLoaderData, Link, useParams, useFetcher } from "remix";
 import lodash, { startCase, groupBy, maxBy } from "lodash";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   updateSet,
   addSet,
@@ -45,8 +45,7 @@ export let action = async ({ request }) => {
         break;
       }
     case "POST":
-      await addSet(form);
-      break;
+      return await addSet(form);
     case "DELETE":
       if (form.get("type") === "exercise") {
         await deleteExerciseFromWorkout(form);
@@ -63,11 +62,8 @@ export let action = async ({ request }) => {
 export default function CurrentExercisesRoute() {
   const { exerciseSets, bestSetByExercise } = useLoaderData();
   const [showDelete, setShowDelete] = useState();
-  const [localExerciseState, setLocalExerciseState] = useState(exerciseSets);
   const { workoutId } = useParams();
   const fetcher = useFetcher();
-
-  useEffect(() => setLocalExerciseState(exerciseSets), [exerciseSets]);
 
   const renderExerciseForm = (exercise_name, sets) => {
     const exerciseId = sets[0]?.exercise_id;
@@ -83,6 +79,7 @@ export default function CurrentExercisesRoute() {
     const submitSetForm = (weight, repetitions, completed, index) =>
       fetcher.submit(
         {
+          exercise_name: exercise_name,
           workout_id: workoutId,
           repetitions: repetitions,
           weight: weight,
@@ -94,13 +91,6 @@ export default function CurrentExercisesRoute() {
       );
 
     const deleteFunc = (index) => {
-      setLocalExerciseState((oldState) => {
-        const newState = { ...oldState };
-        newState[exercise_name] = newState[exercise_name].filter(
-          (s) => s.set_id !== index
-        );
-        return newState;
-      });
       fetcher.submit(
         {
           workout_id: workoutId,
@@ -113,14 +103,11 @@ export default function CurrentExercisesRoute() {
     };
 
     const submitFunc = () => {
-      setLocalExerciseState((oldState) => {
-        const newState = { ...oldState };
-        newState[exercise_name] = [...newState[exercise_name], exerciseSetForm];
-        return newState;
-      });
       fetcher.submit(exerciseSetForm, { method: "POST" });
     };
+
     const previousBestSet = bestSetByExercise[exerciseId];
+
     return (
       <>
         <div className="box mb-3">
@@ -145,6 +132,20 @@ export default function CurrentExercisesRoute() {
               submitFunc={submitSetForm}
             />
           ))}
+          {fetcher.submission &&
+          fetcher.submission.formData.get("exercise_name") === exercise_name &&
+          fetcher.submission.method === "POST" ? (
+            <SetInput
+              weight={fetcher.submission.formData.get("weight")}
+              repetitions={fetcher.submission.formData.get("repetitions")}
+              index={fetcher.submission.formData.get("index")}
+              deleteFunc={() =>
+                deleteFunc(fetcher.submission.formData.get("index"))
+              }
+              submitFunc={submitSetForm}
+            ></SetInput>
+          ) : null}
+
           <buttons className="level is-mobile mt-5">
             <div style={{ width: "85%" }}>
               <button
@@ -207,11 +208,9 @@ export default function CurrentExercisesRoute() {
 
   return (
     <>
-      {Object.entries(localExerciseState).map(
-        ([exercise_name, sets], exIndex) => (
-          <div key={exIndex}>{renderExerciseForm(exercise_name, sets)}</div>
-        )
-      )}
+      {Object.entries(exerciseSets).map(([exercise_name, sets], exIndex) => (
+        <div key={exIndex}>{renderExerciseForm(exercise_name, sets)}</div>
+      ))}
       <Outlet />
       <Link to={`/workout/${workoutId}/addExercise`}>
         <button className="mt-5 button is-black is-fullwidth is-small">

@@ -10,6 +10,8 @@ import {
 } from "remix";
 import styles from "./styles/styles.module.css";
 
+import { AnimatePresence } from "framer-motion";
+
 import { initializeApp } from "firebase/app";
 import FirebaseLogin from "~/components/FirebaseLogin.js";
 export function meta() {
@@ -95,7 +97,9 @@ export default function App() {
         <NavBar>
           <FirebaseLogin app={app} />
         </NavBar>
-        <Outlet />
+        <AnimatePresence exitBeforeEnter>
+          <Outlet />
+        </AnimatePresence>
 
         <ScrollRestoration />
         <Scripts />

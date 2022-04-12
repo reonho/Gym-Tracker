@@ -7,6 +7,7 @@ export default function SetInput(props) {
   const [weight, setWeight] = useState(props.weight);
   const [repetitions, setRepetitions] = useState(props.repetitions);
   const [completed, setCompleted] = useState(props.completed);
+  const [deleting, setDeleting] = useState(false);
   const updateDb = debounce(
     (weight, repetitions, completed, index) =>
       props.submitFunc(weight, repetitions, completed, index),
@@ -17,9 +18,12 @@ export default function SetInput(props) {
     }
   );
   useEffect(() => {
-    updateDb(weight, repetitions, completed, props.index);
+    weight && repetitions && completed
+      ? updateDb(weight, repetitions, completed, props.index)
+      : null;
   }, [weight, repetitions, completed]);
-  return (
+
+  return !deleting ? (
     <div
       className="container mb-2 p-2"
       style={{
@@ -49,17 +53,17 @@ export default function SetInput(props) {
           placeholder="Reps"
           value={repetitions}
           onChange={(e) => {
-            setRepetitions(() => {
-              updateDb(weight, e.target.value, completed, props.index);
-              return e.target.value;
-            });
+            setRepetitions(e.target.value);
           }}
         />
       </div>
       <div className="ml-1">
         <button
           className="button is-danger is-light is-small"
-          onClick={props.deleteFunc}
+          onClick={() => {
+            setDeleting(true);
+            props.deleteFunc();
+          }}
         >
           <CgClose size={15} />
         </button>
@@ -79,5 +83,7 @@ export default function SetInput(props) {
         </button>
       </div>
     </div>
+  ) : (
+    <></>
   );
 }

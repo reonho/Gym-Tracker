@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate, useSearchParams } from "remix";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
 
 export default function MeasurementRoute() {
@@ -17,38 +18,46 @@ export default function MeasurementRoute() {
 
   return (
     <UserAuthorisedComponent idPredicate={(id) => id === userId}>
-      <div className="container">
-        <div className="m-2 mt-5">
-          <h4 className="title is-3">Body Measurements</h4>
-          <div className="tabs">
-            <ul>
-              <li
-                className={
-                  location.pathname === "/measurements/history"
-                    ? "is-active"
-                    : null
-                }
-              >
-                <Link
-                  to={`/measurements/history?user=${userId}&measurement_id=1`}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="container">
+          <div className="m-2 mt-5">
+            <h4 className="title is-3">Body Measurements</h4>
+            <div className="tabs">
+              <ul>
+                <li
+                  className={
+                    location.pathname === "/measurements/history"
+                      ? "is-active"
+                      : null
+                  }
                 >
-                  Records
-                </Link>
-              </li>
-              <li
-                className={
-                  location.pathname === "/measurements/add" ? "is-active" : null
-                }
-              >
-                <Link to={`/measurements/add?user=${userId}`}>
-                  Log Measurement
-                </Link>
-              </li>
-            </ul>
+                  <Link
+                    to={`/measurements/history?user=${userId}&measurement_id=1`}
+                  >
+                    Records
+                  </Link>
+                </li>
+                <li
+                  className={
+                    location.pathname === "/measurements/add"
+                      ? "is-active"
+                      : null
+                  }
+                >
+                  <Link to={`/measurements/add?user=${userId}`}>
+                    Log Measurement
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-      <Outlet />
+        <Outlet />
+      </motion.div>
     </UserAuthorisedComponent>
   );
 }
