@@ -18,7 +18,7 @@ export default function SetInput(props) {
     }
   );
   useEffect(() => {
-    weight && repetitions && completed
+    !(!weight && !repetitions && !completed)
       ? updateDb(weight, repetitions, completed, props.index)
       : null;
   }, [weight, repetitions, completed]);
