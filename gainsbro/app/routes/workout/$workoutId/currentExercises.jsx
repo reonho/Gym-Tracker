@@ -13,6 +13,7 @@ import {
 } from "~/service/workouts.js";
 import { MdOutlineMenu } from "react-icons/md";
 import SetInput from "~/components/SetInput";
+import { motion } from "framer-motion";
 
 export let loader = async ({ params }) => {
   const setsForWorkout = await getExercisesForWorkout(params.workoutId);
@@ -135,20 +136,32 @@ export default function CurrentExercisesRoute() {
           {fetcher.submission &&
           fetcher.submission.formData.get("exercise_name") === exercise_name &&
           fetcher.submission.method === "POST" ? (
-            <SetInput
-              weight={fetcher.submission.formData.get("weight")}
-              repetitions={fetcher.submission.formData.get("repetitions")}
-              index={fetcher.submission.formData.get("index")}
-              deleteFunc={() =>
-                deleteFunc(fetcher.submission.formData.get("index"))
-              }
-              submitFunc={submitSetForm}
-            ></SetInput>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <SetInput
+                weight={fetcher.submission.formData.get("weight")}
+                repetitions={fetcher.submission.formData.get("repetitions")}
+                index={fetcher.submission.formData.get("index")}
+                deleteFunc={() =>
+                  deleteFunc(fetcher.submission.formData.get("index"))
+                }
+                submitFunc={submitSetForm}
+              ></SetInput>
+            </motion.div>
           ) : null}
 
           <buttons className="level is-mobile mt-5">
             <div style={{ width: "85%" }}>
               <button
+                disabled={
+                  fetcher.submission &&
+                  fetcher.submission.formData.get("exercise_name") ===
+                    exercise_name &&
+                  fetcher.submission.method === "POST"
+                }
                 onClick={() => {
                   submitFunc();
                 }}

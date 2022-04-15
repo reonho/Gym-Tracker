@@ -123,7 +123,7 @@ export default function StartNewWorkoutRoute() {
                   >
                     <Stopwatch
                       running={true}
-                      initialTime={dayjs() - dayjs.utc(workout.datetime_start)}
+                      initialTime={dayjs.utc(workout.datetime_start)}
                     />
                   </div>
                 </div>

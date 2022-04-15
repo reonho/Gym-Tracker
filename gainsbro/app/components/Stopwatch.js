@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { getCurrentDateTime } from "~/utils/utils";
 
 const Stopwatch = (props) => {
-  const [time, setTime] = useState(props.initialTime);
+  const [time, setTime] = useState(0);
+  const [start, setStart] = useState(props.initialTime);
   const [running, setRunning] = useState(props.running);
 
   useEffect(() => {
     let interval;
     if (running) {
       interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1000);
+        setTime(new Date() - start);
       }, 1000);
     } else if (!running) {
       clearInterval(interval);
