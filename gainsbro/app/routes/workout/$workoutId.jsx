@@ -10,6 +10,7 @@ import { useState } from "react";
 import Stopwatch from "../../components/Stopwatch";
 import dayjs from "dayjs";
 import { MdOutlineMenu } from "react-icons/md";
+import { getGradientFromWorkout, toTime } from "~/utils/utils";
 
 const utc = require("dayjs/plugin/utc");
 const relativeTime = require("dayjs/plugin/relativeTime");
@@ -37,43 +38,48 @@ export let action = async ({ request, params }) => {
   }
 };
 
-function toTime(time) {
-  return (
-    <div>
-      {time > 24 * 36 * 60 * 1000 &&
-        (Math.floor(time / 24 / 36 / 60 / 1000) % 24) + "day(s) "}
-      <span>{("0" + (Math.floor(time / 3600000) % 60)).slice(-2)}:</span>
-      <span>{("0" + Math.floor((time / 60000) % 60)).slice(-2)}:</span>
-      <span>{("0" + Math.floor((time / 1000) % 60)).slice(-2)}</span>
-    </div>
-  );
-}
-
 function workoutMetaData(workout) {
   return (
-    <div className="hero is-light mt-3">
-      <div className="hero-body ">
-        <div className="title mb-3">{workout?.name}</div>
-
-        <div className="icon-text m-1">
-          <span className="icon">
-            <i className="gg-pin"></i>
-          </span>
-          <span>{startCase(workout?.location_name)}</span>
+    <div className="container mt-5">
+      <div
+        className="box m-3 soraFont"
+        style={{
+          borderRadius: "1rem",
+          background: getGradientFromWorkout(
+            workout.id,
+            workout.datetime_start.replace(/\D+/g, "")
+          ),
+        }}
+      >
+        <div
+          className=" mb-3 title soraFont"
+          style={{
+            mixBlendMode: "hard-light",
+          }}
+        >
+          {workout?.name}
         </div>
+        <div style={{ mixBlendMode: "hard-light" }}>
+          <div className="icon-text m-1">
+            <span className="icon">
+              <i className="gg-pin"></i>
+            </span>
+            <span>{startCase(workout?.location_name)}</span>
+          </div>
 
-        <div className="icon-text m-1">
-          <span className="icon">
-            <i className="gg-alarm"></i>
-          </span>
+          <div className="icon-text m-1">
+            <span className="icon">
+              <i className="gg-alarm"></i>
+            </span>
 
-          <span id="start">
-            {`${dayjs
-              .utc(workout?.datetime_start)
-              .local()
-              .format("dddd, DD MMM YY, HH:mm")}
-           `}
-          </span>
+            <span id="start">
+              {`${dayjs
+                .utc(workout?.datetime_start)
+                .local()
+                .format("dddd, DD MMM YY, HH:mm")}
+              `}
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -96,7 +102,7 @@ export default function StartNewWorkoutRoute() {
         {workoutMetaData(workout)}
         <div className="p-5 container">
           <div
-            className="message-body notification mb-3"
+            className="message-body notification mb-3 is-white"
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -106,25 +112,29 @@ export default function StartNewWorkoutRoute() {
             {workout?.datetime_end ? (
               <>
                 <div>
-                  <div className="title is-6 mb-1">Workout Completed. </div>
-                  {toTime(
-                    dayjs.utc(workout.datetime_end) -
-                      dayjs.utc(workout.datetime_start)
-                  )}
+                  <div className="title is-6 mb-1 has-text-success">
+                    Workout Completed.{" "}
+                    {toTime(
+                      dayjs.utc(workout.datetime_end) -
+                        dayjs.utc(workout.datetime_start)
+                    )}
+                  </div>
                 </div>
               </>
             ) : (
               <div>
                 <div>
-                  <div className="title is-6 mb-0">Time Elapsed:</div>
-                  <div
-                    className="is-family-secondary has-text-weight-medium"
-                    id="time"
-                  >
-                    <Stopwatch
-                      running={true}
-                      initialTime={dayjs.utc(workout.datetime_start)}
-                    />
+                  <div className="title is-6 mb-0 has-text-dark">
+                    Time Elapsed:
+                    <div
+                      className="is-family-secondary has-text-weight-medium"
+                      id="time"
+                    >
+                      <Stopwatch
+                        running={true}
+                        initialTime={dayjs.utc(workout.datetime_start)}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div></div>
@@ -134,7 +144,7 @@ export default function StartNewWorkoutRoute() {
             <div className="buttons">
               {!workout.datetime_end && (
                 <button
-                  className="button is-light is-success"
+                  className="button is-success is-small"
                   onClick={() =>
                     fetcher.submit(
                       {
@@ -191,12 +201,7 @@ export default function StartNewWorkoutRoute() {
                         className="input is-small"
                         type="datetime-local"
                         onSelect={(e) => {
-                          if (
-                            dayjs(e.target.value) >
-                            dayjs.utc(workout.datetime_start)
-                          ) {
-                            setCustomDate(e.target.value);
-                          }
+                          setCustomDate(e.target.value);
                         }}
                       ></input>
                       <button
@@ -220,7 +225,7 @@ export default function StartNewWorkoutRoute() {
                 </div>
               )}
               <button
-                className=" button is-light  mb-2"
+                className=" button is-light is-small  mb-2"
                 onClick={() => setShowMenu((e) => !e)}
               >
                 <MdOutlineMenu />

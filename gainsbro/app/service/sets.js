@@ -69,17 +69,24 @@ export async function getSetsForUser(userId, filter_start, filter_end) {
   return data;
 }
 
-export async function getBestSetPerWorkoutExercise(userId, exerciseId) {
+export async function getBestSetPerWorkoutExercise(
+  userId,
+  exerciseId,
+  use_max_weight
+) {
+  const view = use_max_weight
+    ? "max_weight_for_workout_exercise"
+    : "max_volume_for_workout_exercise";
   if (exerciseId) {
     const { data } = await supabase
-      .from("max_volume_for_workout_exercise")
+      .from(view)
       .select("*")
       .eq("user_id", userId)
       .eq("exercise_id", exerciseId);
     return data;
   } else {
     const { data } = await supabase
-      .from("max_volume_for_workout_exercise")
+      .from(view)
       .select("*")
       .eq("user_id", userId);
     return data;

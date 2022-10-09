@@ -1,7 +1,7 @@
 import { getExercisesForUser } from "~/service/exercises";
 import { getBestSetPerWorkoutExercise } from "~/service/sets";
 import { Form, useLoaderData, useSubmit, useSearchParams } from "remix";
-import { startCase, groupBy } from "lodash";
+import { startCase, groupBy, sortBy, lowerCase } from "lodash";
 import ProgressiveOverload from "../../components/ProgressiveOverload";
 
 export let loader = async ({ request }) => {
@@ -10,9 +10,13 @@ export let loader = async ({ request }) => {
   const exercises = await getExercisesForUser(user);
 
   let exercise = url.searchParams.get("exercise_id") ?? exercises[0]?.id;
-  const sets = await getBestSetPerWorkoutExercise(user, exercise);
+  const volSets = await getBestSetPerWorkoutExercise(user, exercise);
+  const weightSets = await getBestSetPerWorkoutExercise(user, exercise, true);
 
-  const setsByExercise = groupBy(sets, (s) => s.exercise_id)[exercise];
+  // const setsByExercise = groupBy(volSets, (s) => s.exercise_id)[exercise];
+  const setsByExercise = Object.values(
+    groupBy([...volSets, ...weightSets], (s) => [s.workout_id])
+  );
   return { setsByExercise, exercises };
 };
 
@@ -40,7 +44,7 @@ export default function ProgressRoute() {
                   });
                 }}
               >
-                {exercises.map((e) => (
+                {sortBy(exercises, (ex) => lowerCase(ex.name)).map((e) => (
                   <option key={e.id} value={e.id}>
                     {`${startCase(e.name)} ${
                       e?.variant ? `(${startCase(e.variant)})` : ""

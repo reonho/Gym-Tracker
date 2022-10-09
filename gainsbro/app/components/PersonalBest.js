@@ -39,7 +39,11 @@ export default function PersonalRecords(props) {
               label: (context) => {
                 let dataIndex = context.dataIndex;
                 const set = Object.values(props.bestSets);
-                return ` Weight: ${set[dataIndex].weight} | Vol: ${set[dataIndex].weight} x ${set[dataIndex].repetitions} = ${set[dataIndex].max_volume}`;
+                return ` Weight: ${set[dataIndex].weight} | Vol: ${
+                  set[dataIndex].weight
+                } x ${set[dataIndex].repetitions} = ${
+                  set[dataIndex].weight * set[dataIndex].repetitions
+                }`;
               },
             },
           },

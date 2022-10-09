@@ -20,10 +20,11 @@ export let loader = async ({ params }) => {
   const userId = setsForWorkout?.[0]?.user_id;
   let bestSetByExercise;
   if (userId) {
-    const sets = await getBestSetPerWorkoutExercise(userId);
+    const sets = await getBestSetPerWorkoutExercise(userId, null, true);
     bestSetByExercise = lodash(sets)
+      .sortBy((s) => -s.repetitions)
       .groupBy((s) => s.exercise_id)
-      .mapValues((e) => maxBy(e, (s) => s.weight * s.repetitions))
+      .mapValues((e) => maxBy(e, (s) => s.weight))
       .value();
   }
 
@@ -116,8 +117,8 @@ export default function CurrentExercisesRoute() {
 
           {previousBestSet && (
             <p>
-              <i> PB:</i> {previousBestSet.weight} x{" "}
-              {previousBestSet.repetitions} | {previousBestSet.max_volume}
+              <i> PB:</i> <b>{previousBestSet.weight} </b> x{" "}
+              {previousBestSet.repetitions}
             </p>
           )}
           <hr className="mb-2 mt-2" />
@@ -159,13 +160,12 @@ export default function CurrentExercisesRoute() {
                 disabled={
                   fetcher.submission &&
                   fetcher.submission.formData.get("exercise_name") ===
-                    exercise_name &&
-                  fetcher.submission.method === "POST"
+                    exercise_name
                 }
                 onClick={() => {
                   submitFunc();
                 }}
-                className="button is-fullwidth is-black is-small tile"
+                className="button is-fullwidth is-small is-black tile"
               >
                 + Set
               </button>
@@ -199,7 +199,7 @@ export default function CurrentExercisesRoute() {
                 <div className="dropdown-content p-0 mt-1">
                   <div className="dropdown-item p-2 m-0">
                     <button
-                      className="button is-light is-danger is-small is-fullwidth m-0 p-0"
+                      className="button is-light is-danger is-fullwidth m-0 p-0"
                       onClick={() =>
                         fetcher.submit(
                           { ...exerciseSetForm, type: "exercise" },
@@ -226,7 +226,7 @@ export default function CurrentExercisesRoute() {
       ))}
       <Outlet />
       <Link to={`/workout/${workoutId}/addExercise`}>
-        <button className="mt-5 button is-black is-fullwidth is-small">
+        <button className="mt-5 button is-fullwidth is-black">
           + Exercise
         </button>
       </Link>

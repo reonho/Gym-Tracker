@@ -4,11 +4,12 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
 } from "firebase/auth";
+import { useEffect } from "react";
 import { useState } from "react";
 import { MdExpandMore } from "react-icons/md";
 
 export default function FirebaseLogin(props) {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState({});
   const [dropdownActive, setDropdownActive] = useState(false);
   const provider = new GoogleAuthProvider();
   const auth = getAuth(props.app);
@@ -21,12 +22,24 @@ export default function FirebaseLogin(props) {
   }
 
   onAuthStateChanged(auth, (result) => {
-    result ? setUser(result) : setUser(null);
+    result ? setUser(result) : setUser();
   });
+
+  useEffect(() => {
+    if (user == null) {
+      localStorage.removeItem("user");
+    } else if (Object.keys(user).length !== 0) {
+      localStorage.setItem("user", JSON.stringify(user));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")));
+  }, []);
 
   return (
     <div>
-      {!user && (
+      {user?.displayName === undefined && (
         <button onClick={googleLogin} className="button is-black soraFont">
           Login
         </button>

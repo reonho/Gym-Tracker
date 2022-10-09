@@ -1,6 +1,13 @@
 import { useLoaderData } from "remix";
 import { getLifetimeStatistics, getSetsForUser } from "~/service/sets";
-import lodash, { startCase, reduce, pick, omit } from "lodash";
+import lodash, {
+  startCase,
+  reduce,
+  pick,
+  omit,
+  lowerCase,
+  sortBy,
+} from "lodash";
 import dayjs from "dayjs";
 import { getWorkoutsForUser } from "~/service/workouts";
 var weekOfYear = require("dayjs/plugin/weekOfYear");
@@ -11,15 +18,20 @@ export let loader = async ({ request }) => {
   let user = url.searchParams.get("user");
   let stats = await getLifetimeStatistics(user);
   let workouts = await getWorkoutsForUser(user);
-
   const totalTimeSpent = workouts
     .map((w) => dayjs(w.datetime_end).diff(w.datetime_start, "minute"))
     .reduce((a, b) => a + b);
-  return [stats, totalTimeSpent, Math.round(totalTimeSpent / workouts.length)];
+  return [
+    stats,
+    totalTimeSpent,
+    Math.round(totalTimeSpent / workouts.length),
+    workouts.length,
+  ];
 };
 
 export default function StatisticsRoute() {
-  const [stats, totalTimeSpent, averageTimeSpent] = useLoaderData();
+  const [stats, totalTimeSpent, averageTimeSpent, numWorkouts] =
+    useLoaderData();
   const abbv = {
     AW: "Average Weight",
     AR: "Average Repetitions",
@@ -50,7 +62,7 @@ export default function StatisticsRoute() {
       : "0";
   };
 
-  let workoutsTable = stats.map((w) => ({
+  let workoutsTable = sortBy(stats, (s) => lowerCase(s.name)).map((w) => ({
     Exercise: `${startCase(w.name)} ${
       w?.variant ? `(${startCase(w.variant)})` : ""
     }`,
@@ -72,6 +84,10 @@ export default function StatisticsRoute() {
         className="notification"
         style={{ flexDirection: "column", display: "flex" }}
       >
+        <p>
+          <b>Total Workouts: </b>
+          <i>{numWorkouts}</i>
+        </p>
         <p>
           <b>Total Time: </b>
           <i>{totalTimeSpent} min</i>

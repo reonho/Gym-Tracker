@@ -1,5 +1,5 @@
 import { useLoaderData, Link, useSearchParams } from "remix";
-import { startCase, groupBy, mapValues } from "lodash";
+import { startCase, groupBy, mapValues, sortBy, sum } from "lodash";
 import { useState } from "react";
 import { getLocations, addLocation } from "~/service/location.js";
 import UserAuthorisedComponent from "../components/UserAuthorisedComponent";
@@ -16,11 +16,27 @@ export let loader = async ({ request }) => {
   const today = dayjs().endOf("day");
   const locations = await getLocations(user);
   const workoutsForUser = await getWorkoutsForUser(user, twoMonthsAgo, today);
+  let workoutsPerLocation = mapValues(
+    groupBy(workoutsForUser, "location_name"),
+    (e) => e.length
+  );
 
-  return [
-    locations,
-    mapValues(groupBy(workoutsForUser, "location_name"), (e) => e.length),
-  ];
+  if (Object.values(workoutsPerLocation).length > 5) {
+    const cutOff = sortBy(Object.values(workoutsPerLocation)).reverse()[5];
+    const sumEntriesBelowCutoff = sum(
+      Object.values(workoutsPerLocation).filter((times) => times <= cutOff)
+    );
+    workoutsPerLocation = {
+      ...Object.fromEntries(
+        Object.entries(workoutsPerLocation).filter(
+          ([loc, times]) => times > cutOff
+        )
+      ),
+      Others: sumEntriesBelowCutoff,
+    };
+  }
+
+  return [locations, workoutsPerLocation];
 };
 
 export let action = async ({ request }) => {

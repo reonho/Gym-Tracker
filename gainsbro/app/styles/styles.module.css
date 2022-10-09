@@ -20,16 +20,16 @@
 }
 
 .primary {
-  background: #283048; /* fallback for old browsers */
+  background: #bdc3c7; /* fallback for old browsers */
   background: -webkit-linear-gradient(
-    to right,
-    #859398,
-    #283048
+    to left,
+    #2c3e50,
+    #bdc3c7
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
-    to right,
-    #859398,
-    #283048
+    to left,
+    #2c3e50,
+    #bdc3c7
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
@@ -39,4 +39,22 @@
 
 .merriweatherFont {
   font-family: "Merriweather", sans-serif;
+}
+
+.secondary {
+  background: #24c6dc; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #514a9d,
+    #24c6dc
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #514a9d,
+    #24c6dc
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.tertiary {
+  background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
 }

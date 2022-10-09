@@ -3,7 +3,7 @@ import { getWorkoutsForUser } from "~/service/workouts";
 import lodash, { transform, pick } from "lodash";
 import dayjs from "dayjs";
 import WorkoutPerWeek from "../../components/WorkoutsPerWeek";
-import { getDateOfISOWeek, getWeekNumber } from "~/utils/utils";
+import { getWeekNumber } from "~/utils/utils";
 
 export let loader = async ({ request }) => {
   let url = new URL(request.url);
@@ -21,7 +21,7 @@ export let loader = async ({ request }) => {
     .value();
 
   let weeksToShow = Object.keys(workouts);
-  weeksToShow.sort();
+  weeksToShow.sort((a, b) => b - a);
   weeksToShow = weeksToShow.slice(0, 10).map(String);
 
   return transform(pick(workouts, weeksToShow), (res, val, key) => {
